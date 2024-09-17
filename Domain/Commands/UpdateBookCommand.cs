@@ -3,17 +3,17 @@
     public class UpdateBookCommand
     {
         public int Id { get; set; }
-        public string Title { get; set; }
-        public string ISBN { get; set; }
-        public string Author { get; set; }
-        public DateTime DateEdition { get; set; }
-        public string Category { get; set; }
-        public bool Disponibilite { get; set; }
+        public string Title { get; set; } = string.Empty; // Initialize to empty string
+        public string ISBN { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public DateTime DateEdition { get; set; } = DateTime.Now; // Default to current date
+        public string Category { get; set; } = string.Empty;
+        public bool Disponibilite { get; set; } = true; // Default to true
 
-        // Parameterless constructor (for flexibility, especially in web APIs)
+        // Parameterless constructor
         public UpdateBookCommand() { }
 
-        // Constructor that requires all properties (for stricter initialization)
+        // Constructor with parameters
         public UpdateBookCommand(int id, string title, string isbn, string author, DateTime dateEdition, string category, bool disponibilite)
         {
             Id = id;
