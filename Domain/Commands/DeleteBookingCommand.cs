@@ -1,10 +1,10 @@
 ﻿namespace StartMyNewApp.Domain.Commands
 {
-    public class DeletePersonCommand
+    public class DeleteBookingCommand
     {
         public int Id { get; set; }
 
-        public DeletePersonCommand(int id)
+        public DeleteBookingCommand(int id)
         {
             Id = id;
         }

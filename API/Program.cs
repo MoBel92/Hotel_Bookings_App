@@ -4,6 +4,7 @@ using StartMyNewApp.Infra.Repositories;
 using DATA.Context;  // Ensure the namespace of your DbContext is correct
 using Microsoft.OpenApi.Models; // Add this for Swagger configuration
 using StartMyNewApp.Domain.Handlers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -19,12 +20,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register the GenericRepository in the DI container
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-// Register handlers for Person
+// Register handlers for all entities (User, HotelArticle, Booking, Comment, Location)
 builder.Services.AddScoped(typeof(AddGenericHandler<>));
 builder.Services.AddScoped(typeof(UpdateGenericHandler<>));
 builder.Services.AddScoped(typeof(DeleteGenericHandler<>));
 builder.Services.AddScoped(typeof(GetGenericHandler<>));
 builder.Services.AddScoped(typeof(GetListGenericHandler<>));
+
 // Add Swagger services
 builder.Services.AddSwaggerGen(c =>
 {
@@ -76,3 +78,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

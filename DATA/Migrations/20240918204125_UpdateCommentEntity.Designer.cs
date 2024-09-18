@@ -4,6 +4,7 @@ using DATA.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240918204125_UpdateCommentEntity")]
+    partial class UpdateCommentEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,13 +44,6 @@ namespace DATA.Migrations
 
                     b.Property<int>("HotelID")
                         .HasColumnType("int");
-
-                    b.Property<int>("NumberOfGuests")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SpecialRequests")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -107,11 +103,12 @@ namespace DATA.Migrations
                     b.Property<int>("HotelStars")
                         .HasColumnType("int");
 
-                    b.Property<string>("LocationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
 
                     b.HasKey("HotelID");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("HotelArticles");
                 });
@@ -193,6 +190,17 @@ namespace DATA.Migrations
                     b.Navigation("HotelArticle");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StartMyNewApp.Domain.Models.HotelArticle", b =>
+                {
+                    b.HasOne("StartMyNewApp.Domain.Models.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
                 });
 #pragma warning restore 612, 618
         }
