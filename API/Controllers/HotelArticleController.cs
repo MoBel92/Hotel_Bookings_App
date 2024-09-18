@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StartMyNewApp.Domain.Handlers;
 using StartMyNewApp.Domain.Models;
+using System.Linq;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -26,12 +27,28 @@ public class HotelArticleController : ControllerBase
         _getListHandler = getListHandler;
     }
 
-    // GET: api/HotelArticle
+    // GET: api/HotelArticle?sortBy=location&order=asc
     [HttpGet]
-    public async Task<IActionResult> GetHotelArticles()
+    public async Task<IActionResult> GetHotelArticles(string? sortBy = null, string? order = "asc")
     {
         var hotelArticles = await _getListHandler.Handle();
-        return Ok(hotelArticles); // Return 200 OK with the list of hotel articles
+
+        // Sorting logic
+        if (!string.IsNullOrEmpty(sortBy))
+        {
+            hotelArticles = sortBy.ToLower() switch
+            {
+                "location" => order.ToLower() == "desc"
+                    ? hotelArticles.OrderByDescending(h => h.LocationName) // Change here
+                    : hotelArticles.OrderBy(h => h.LocationName), // Change here
+                "hotelstars" => order.ToLower() == "desc"
+                    ? hotelArticles.OrderByDescending(h => h.HotelStars)
+                    : hotelArticles.OrderBy(h => h.HotelStars),
+                _ => hotelArticles // Default if sortBy is not recognized
+            };
+        }
+
+        return Ok(hotelArticles.ToList()); // Return 200 OK with the sorted list of hotel articles
     }
 
     // GET: api/HotelArticle/{id}
