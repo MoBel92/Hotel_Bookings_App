@@ -34,19 +34,24 @@ public class HotelArticleController : ControllerBase
         var hotelArticles = await _getListHandler.Handle();
 
         // Sorting logic
+        
         if (!string.IsNullOrEmpty(sortBy))
         {
             hotelArticles = sortBy.ToLower() switch
             {
                 "location" => order.ToLower() == "desc"
-                    ? hotelArticles.OrderByDescending(h => h.LocationName) // Change here
-                    : hotelArticles.OrderBy(h => h.LocationName), // Change here
+                    ? hotelArticles.OrderByDescending(h => h.LocationName ?? string.Empty) // Check values here
+                    : hotelArticles.OrderBy(h => h.LocationName ?? string.Empty),
                 "hotelstars" => order.ToLower() == "desc"
                     ? hotelArticles.OrderByDescending(h => h.HotelStars)
                     : hotelArticles.OrderBy(h => h.HotelStars),
                 _ => hotelArticles // Default if sortBy is not recognized
             };
         }
+
+        // Log the sorted result
+        Console.WriteLine($"Sorted hotel articles: {string.Join(", ", hotelArticles.Select(h => h.HotelName + " - " + h.LocationName))}");
+
 
         return Ok(hotelArticles.ToList()); // Return 200 OK with the sorted list of hotel articles
     }
