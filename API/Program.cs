@@ -32,30 +32,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "StartMyNewApp API", Version = "v1" });
 
-    // If you need to add security definition for JWT or Bearer tokens, you can add it here:
-    // c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    // {
-    //     Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
-    //     Name = "Authorization",
-    //     In = ParameterLocation.Header,
-    //     Type = SecuritySchemeType.ApiKey,
-    //     Scheme = "Bearer"
-    // });
-
-    // c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    // {
-    //     {
-    //         new OpenApiSecurityScheme
-    //         {
-    //             Reference = new OpenApiReference
-    //             {
-    //                 Type = ReferenceType.SecurityScheme,
-    //                 Id = "Bearer"
-    //             }
-    //         },
-    //         Array.Empty<string>()
-    //     }
-    // });
 });
 
 var app = builder.Build();
