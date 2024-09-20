@@ -27,21 +27,20 @@ public class HotelArticleController : ControllerBase
         _getListHandler = getListHandler;
     }
 
-    // GET: api/HotelArticle?sortBy=location&order=asc
+    // GET: api/HotelArticle?sortBy=city&order=asc
     [HttpGet]
     public async Task<IActionResult> GetHotelArticles(string? sortBy = null, string? order = "asc")
     {
         var hotelArticles = await _getListHandler.Handle();
 
         // Sorting logic
-        
         if (!string.IsNullOrEmpty(sortBy))
         {
             hotelArticles = sortBy.ToLower() switch
             {
-                "location" => order.ToLower() == "desc"
-                    ? hotelArticles.OrderByDescending(h => h.LocationName ?? string.Empty) // Check values here
-                    : hotelArticles.OrderBy(h => h.LocationName ?? string.Empty),
+                "city" => order.ToLower() == "desc"
+                    ? hotelArticles.OrderByDescending(h => h.City ?? string.Empty) // Use ?? to provide a default
+                    : hotelArticles.OrderBy(h => h.City ?? string.Empty),
                 "hotelstars" => order.ToLower() == "desc"
                     ? hotelArticles.OrderByDescending(h => h.HotelStars)
                     : hotelArticles.OrderBy(h => h.HotelStars),
@@ -50,11 +49,12 @@ public class HotelArticleController : ControllerBase
         }
 
         // Log the sorted result
-        Console.WriteLine($"Sorted hotel articles: {string.Join(", ", hotelArticles.Select(h => h.HotelName + " - " + h.LocationName))}");
-
+        Console.WriteLine($"Sorted hotel articles: {string.Join(", ", hotelArticles.Select(h => h.HotelName + " - " + (h.City ?? "Unknown City")))}");
 
         return Ok(hotelArticles.ToList()); // Return 200 OK with the sorted list of hotel articles
     }
+
+
 
     // GET: api/HotelArticle/{id}
     [HttpGet("{id}")]
@@ -72,6 +72,11 @@ public class HotelArticleController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddHotelArticle([FromBody] HotelArticle hotelArticle)
     {
+        if (hotelArticle == null)
+        {
+            return BadRequest("HotelArticle cannot be null"); // Return 400 Bad Request
+        }
+
         await _addHandler.Handle(hotelArticle);
         return CreatedAtAction(nameof(GetHotelArticle), new { id = hotelArticle.HotelID }, hotelArticle); // Return 201 Created
     }

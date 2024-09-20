@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using StartMyNewApp.Domain.Interface;
 using StartMyNewApp.Infra.Repositories;
-using DATA.Context;  // Ensure the namespace of your DbContext is correct
-using Microsoft.OpenApi.Models; // Add this for Swagger configuration
+using DATA.Context;
+using Microsoft.OpenApi.Models;
 using StartMyNewApp.Domain.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,17 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Register the DbContext and specify the migrations assembly to be the DATA project
+// Register the DbContext and specify the migrations assembly
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("DATA")  // Specify the DATA project for migrations
+        b => b.MigrationsAssembly("DATA")
     ));
 
 // Register the GenericRepository in the DI container
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-// Register handlers for all entities (User, HotelArticle, Booking, Comment, Location)
+// Register handlers for all entities
 builder.Services.AddScoped(typeof(AddGenericHandler<>));
 builder.Services.AddScoped(typeof(UpdateGenericHandler<>));
 builder.Services.AddScoped(typeof(DeleteGenericHandler<>));
@@ -31,7 +31,15 @@ builder.Services.AddScoped(typeof(GetListGenericHandler<>));
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "StartMyNewApp API", Version = "v1" });
+});
 
+// Enable CORS (if needed)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
 });
 
 var app = builder.Build();
@@ -43,15 +51,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "StartMyNewApp API V1");
-        c.RoutePrefix = string.Empty;  // Makes Swagger available at the root URL (http://localhost:<port>/)
+        c.RoutePrefix = string.Empty;
     });
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAllOrigins"); // Use CORS policy
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
 

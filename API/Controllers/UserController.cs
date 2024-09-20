@@ -55,7 +55,9 @@ public class UserController : ControllerBase
         {
             Username = command.Username,
             Name = command.Name,
-            DateOfBirth = command.DateOfBirth // Nullable
+            Email = command.Email,
+            Password = command.Password,
+            PhoneNumber = command.PhoneNumber
         };
 
         await _addHandler.Handle(user);
@@ -76,7 +78,9 @@ public class UserController : ControllerBase
             IdUser = command.IdUser,
             Username = command.Username,
             Name = command.Name,
-            DateOfBirth = command.DateOfBirth // Nullable
+            Email = command.Email,
+            Password = command.Password,
+            PhoneNumber = command.PhoneNumber
         };
 
         await _updateHandler.Handle(user);
