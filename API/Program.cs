@@ -30,7 +30,7 @@ builder.Services.AddScoped(typeof(GetListGenericHandler<>));
 // Add Swagger services
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "StartMyNewApp API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotel_Bookings_App", Version = "v1" });
 });
 
 // Enable CORS (if needed)
