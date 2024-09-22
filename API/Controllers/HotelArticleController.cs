@@ -63,7 +63,7 @@ public class HotelArticleController : ControllerBase
         var hotelArticle = await _getHandler.Handle(id);
         if (hotelArticle == null)
         {
-            return NotFound(); // Return 404 if not found
+            return NotFound(); 
         }
         return Ok(hotelArticle);
     }
@@ -74,11 +74,11 @@ public class HotelArticleController : ControllerBase
     {
         if (hotelArticle == null)
         {
-            return BadRequest("HotelArticle cannot be null"); // Return 400 Bad Request
+            return BadRequest("HotelArticle cannot be null"); 
         }
 
         await _addHandler.Handle(hotelArticle);
-        return CreatedAtAction(nameof(GetHotelArticle), new { id = hotelArticle.HotelID }, hotelArticle); // Return 201 Created
+        return CreatedAtAction(nameof(GetHotelArticle), new { id = hotelArticle.HotelID }, hotelArticle);
     }
 
     // PUT: api/HotelArticle/{id}
@@ -87,11 +87,11 @@ public class HotelArticleController : ControllerBase
     {
         if (id != hotelArticle.HotelID)
         {
-            return BadRequest("Hotel Article ID mismatch"); // Return 400 Bad Request
+            return BadRequest("Hotel Article ID mismatch"); 
         }
 
         await _updateHandler.Handle(hotelArticle);
-        return NoContent(); // Return 204 No Content
+        return NoContent(); 
     }
 
     // DELETE: api/HotelArticle/{id}
@@ -99,6 +99,6 @@ public class HotelArticleController : ControllerBase
     public async Task<IActionResult> DeleteHotelArticle(int id)
     {
         await _deleteHandler.Handle(id);
-        return NoContent(); // Return 204 No Content
+        return NoContent(); 
     }
 }
