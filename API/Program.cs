@@ -42,6 +42,12 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader());
 });
 
+// Configure Kestrel to listen on port 8080 (Render's default port)
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(8080);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,7 +61,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// Disable HTTPS redirection for hosted environments like Render
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCors("AllowAllOrigins"); // Use CORS policy
 app.UseAuthorization();
 app.MapControllers();
