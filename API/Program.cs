@@ -45,28 +45,22 @@ builder.Services.AddCors(options =>
 // Configure Kestrel to listen on port 8080 (Render's default port)
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    // Only bind Kestrel to port 8080 in production to avoid conflicts
+    // Bind Kestrel to port 8080
     serverOptions.ListenAnyIP(8080);
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Enable Swagger UI for both development and production environments
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    // Use Swagger in development environments for API testing
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "StartMyNewApp API V1");
-        c.RoutePrefix = string.Empty;
-    });
-    // Enable detailed error pages in development
-    app.UseDeveloperExceptionPage();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
+    c.RoutePrefix = "swagger"; // Optional: change this to make Swagger available at /swagger
+});
 
-// Configure HTTPS Redirection
-// It's disabled for production because Render typically handles SSL termination
+// Disable HTTPS redirection for hosted environments like Render
 if (!app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
@@ -80,5 +74,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
 
