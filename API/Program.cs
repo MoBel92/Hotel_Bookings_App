@@ -57,7 +57,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
-    c.RoutePrefix = "swagger"; // Optional: change this to make Swagger available at /swagger
+    c.RoutePrefix = string.Empty; // Set RoutePrefix to empty to access Swagger directly at /
 });
 
 // Disable HTTPS redirection for hosted environments like Render
@@ -74,4 +74,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
