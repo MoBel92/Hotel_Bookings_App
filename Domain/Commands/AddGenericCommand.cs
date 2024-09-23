@@ -1,81 +1,88 @@
 ﻿namespace StartMyNewApp.Domain.Commands
 {
-    // Add Command
+    // User Add Command - Can be replaced with UserCreateDto
     public class AddUserCommand
     {
-        public string Username { get; set; } = string.Empty; // User name
-        public string Name { get; set; } = string.Empty; // Full name
-        public string Email { get; set; } = string.Empty; // User email address
-        public string Password { get; set; } = string.Empty; // User password
-        public string PhoneNumber { get; set; } = string.Empty; // User phone number
+        public string Username { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
     }
 
+    // Wishlist Add Command - Can be replaced with WishlistCreateDto
     public class AddWishlistCommand
     {
-        public int UserId { get; set; } // Foreign key to Users
-        public int HotelId { get; set; } // Foreign key to HotelArticles
-        public DateTime AddedDate { get; set; } // Date the hotel was added to the wishlist
-        public bool IsActive { get; set; } // Indicates if the wishlist entry is active
+        public int UserId { get; set; }
+        public int HotelId { get; set; }
+        public DateTime AddedDate { get; set; }
+        public bool IsActive { get; set; }
     }
 
+    // Room Add Command - Can be replaced with RoomCreateDto
     public class AddRoomCommand
     {
         public string RoomType { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
-        public int HotelId { get; set; } // Foreign key to HotelArticles
+        public int HotelId { get; set; }
     }
 
+    // Payment Add Command - Can be replaced with PaymentCreateDto
     public class AddPaymentCommand
     {
-        public int UserId { get; set; } // Foreign key to Users
-        public int BookingId { get; set; } // Foreign key to Bookings
+        public int UserId { get; set; }
+        public int BookingId { get; set; }
         public decimal TotalAmount { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public string PaymentStatus { get; set; } = string.Empty;
     }
 
+    // Location Add Command - Can be replaced with LocationCreateDto
     public class AddLocationCommand
     {
-        public string LocationName { get; set; } = string.Empty; // Name of the location
+        public string LocationName { get; set; } = string.Empty;
     }
 
+    // HotelArticle Add Command - Can be replaced with HotelArticleCreateDto
     public class AddHotelArticleCommand
     {
-        public string HotelName { get; set; } = string.Empty; // Name of the hotel
-        public string HotelDescription { get; set; } = string.Empty; // Description of the hotel
-        public int HotelStars { get; set; } // Rating of the hotel (1-5)
-        public string Street { get; set; } = string.Empty; // Street address
-        public string City { get; set; } = string.Empty; // City
-        public string State { get; set; } = string.Empty; // State or region
-        public string ZipCode { get; set; } = string.Empty; // Postal code
-        public string Country { get; set; } = string.Empty; // Country
-        public List<string> Images { get; set; } = new List<string>(); // List of image URLs or file paths
+        public string HotelName { get; set; } = string.Empty;
+        public string HotelDescription { get; set; } = string.Empty;
+        public int HotelStars { get; set; }
+        public string Street { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string ZipCode { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public List<string> Images { get; set; } = new List<string>();
     }
 
+    // Comment Add Command - Can be replaced with CommentCreateDto
     public class AddCommentCommand
     {
-        public string Body { get; set; } = string.Empty; // Comment body
-        public int HotelID { get; set; } // Foreign key to HotelArticle
+        public string Body { get; set; } = string.Empty;
+        public int HotelID { get; set; }
         public int Rating { get; set; }
     }
 
+    // Booking Add Command - Can be replaced with BookingCreateDto
     public class AddBookingCommand
     {
-        public int UserId { get; set; } // Foreign key to User
-        public int HotelID { get; set; } // Foreign key to HotelArticle
-        public int RoomId { get; set; } // Foreign key to Rooms
+        public int UserId { get; set; }
+        public int HotelID { get; set; }
+        public int RoomId { get; set; }
         public int NumberOfRooms { get; set; }
-        public DateTime CheckInDate { get; set; } // Check-in date
-        public DateTime CheckOutDate { get; set; } // Check-out date
+        public DateTime CheckInDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
     }
 
+    // Amenity Add Command - Can be replaced with AmenityCreateDto
     public class AddAmenityCommand
     {
-        public string Name { get; set; } = string.Empty; // Name of the amenity
-        public string Description { get; set; } = string.Empty; // Optional description
-        public bool IsAvailable { get; set; } // Indicates if the amenity is available
-        public int HotelId { get; set; } // Foreign key to HotelArticles
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool IsAvailable { get; set; }
+        public int HotelId { get; set; }
     }
-
 }

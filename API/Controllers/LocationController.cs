@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StartMyNewApp.Domain.Commands;
 using StartMyNewApp.Domain.Handlers;
+using StartMyNewApp.Domain.DTOs; // Assuming DTOs are in this namespace
 using StartMyNewApp.Domain.Models;
-
 [ApiController]
 [Route("api/[controller]")]
 public class LocationController : ControllerBase
 {
-    private readonly AddGenericHandler<Location> _addHandler;
-    private readonly UpdateGenericHandler<Location> _updateHandler;
+    private readonly AddGenericHandler<Location, LocationCreateDto> _addHandler;
+    private readonly UpdateGenericHandler<Location, LocationUpdateDto> _updateHandler;
     private readonly DeleteGenericHandler<Location> _deleteHandler;
-    private readonly GetGenericHandler<Location> _getHandler;
-    private readonly GetListGenericHandler<Location> _getListHandler;
+    private readonly GetGenericHandler<Location, LocationReadDto> _getHandler;
+    private readonly GetListGenericHandler<Location, LocationReadDto> _getListHandler;
 
     public LocationController(
-        AddGenericHandler<Location> addHandler,
-        UpdateGenericHandler<Location> updateHandler,
+        AddGenericHandler<Location, LocationCreateDto> addHandler,
+        UpdateGenericHandler<Location, LocationUpdateDto> updateHandler,
         DeleteGenericHandler<Location> deleteHandler,
-        GetGenericHandler<Location> getHandler,
-        GetListGenericHandler<Location> getListHandler)
+        GetGenericHandler<Location, LocationReadDto> getHandler,
+        GetListGenericHandler<Location, LocationReadDto> getListHandler)
     {
         _addHandler = addHandler;
         _updateHandler = updateHandler;
@@ -40,42 +39,24 @@ public class LocationController : ControllerBase
     public async Task<IActionResult> GetLocation(int id)
     {
         var location = await _getHandler.Handle(id);
-        if (location == null)
-        {
-            return NotFound(); // Return 404 if not found
-        }
-        return Ok(location);
+        return location != null ? Ok(location) : NotFound(); // Return 200 OK or 404 Not Found
     }
 
     // POST: api/Location
     [HttpPost]
-    public async Task<IActionResult> AddLocation([FromBody] AddLocationCommand command)
+    public async Task<IActionResult> AddLocation([FromBody] LocationCreateDto dto)
     {
-        var location = new Location
-        {
-            LocationName = command.LocationName
-        };
-
-        await _addHandler.Handle(location);
-        return CreatedAtAction(nameof(GetLocation), new { id = location.IdLocation }, location); // Return 201 Created
+        if (dto == null) return BadRequest("Location cannot be null");
+        await _addHandler.Handle(dto);
+        return CreatedAtAction(nameof(GetLocation), new { id = dto.LocationName }, dto); // Adjust based on ID usage
     }
 
     // PUT: api/Location/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateLocation(int id, [FromBody] UpdateLocationCommand command)
+    public async Task<IActionResult> UpdateLocation(int id, [FromBody] LocationUpdateDto dto)
     {
-        if (id != command.IdLocation)
-        {
-            return BadRequest("Location ID mismatch"); // Return 400 Bad Request
-        }
-
-        var location = new Location
-        {
-            IdLocation = command.IdLocation,
-            LocationName = command.LocationName
-        };
-
-        await _updateHandler.Handle(location);
+        if (id != dto.IdLocation) return BadRequest("Location ID mismatch"); // Return 400 Bad Request
+        await _updateHandler.Handle(dto);
         return NoContent(); // Return 204 No Content
     }
 

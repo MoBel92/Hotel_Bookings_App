@@ -1,87 +1,87 @@
 ﻿namespace StartMyNewApp.Domain.Commands
 {
-    public class UpdateUserCommand
+    public class UpdateUserCommand // Can be replaced with UserUpdateDto
     {
-        public int IdUser { get; set; } // The ID of the user to be updated
-        public string Username { get; set; } = string.Empty; // Updated user name
-        public string Name { get; set; } = string.Empty; // Updated full name
-        public string Email { get; set; } = string.Empty; // Updated email address
-        public string Password { get; set; } = string.Empty; // Updated password (if changing)
-        public string PhoneNumber { get; set; } = string.Empty; // Updated phone number
+        public int IdUser { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
     }
 
-    public class UpdateWishlistCommand
+    public class UpdateWishlistCommand // Can be replaced with WishlistUpdateDto
     {
         public int WishlistId { get; set; }
-        public int UserId { get; set; } // Foreign key to Users
-        public int HotelId { get; set; } // Foreign key to HotelArticles
-        public bool IsActive { get; set; } // Indicates if the wishlist entry is active
+        public int UserId { get; set; }
+        public int HotelId { get; set; }
+        public bool IsActive { get; set; }
     }
 
-    public class UpdateRoomCommand
+    public class UpdateRoomCommand // Can be replaced with RoomUpdateDto
     {
-        public int RoomId { get; set; } // The ID of the room to be updated
+        public int RoomId { get; set; }
         public string RoomType { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
-        public int HotelId { get; set; } // Foreign key to HotelArticles
+        public int HotelId { get; set; }
     }
 
-    public class UpdatePaymentCommand
+    public class UpdatePaymentCommand // Can be replaced with PaymentUpdateDto
     {
         public int PaymentId { get; set; }
-        public int UserId { get; set; } // Foreign key to Users
-        public int BookingId { get; set; } // Foreign key to Bookings
+        public int UserId { get; set; }
+        public int BookingId { get; set; }
         public decimal TotalAmount { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public string PaymentStatus { get; set; } = string.Empty;
     }
 
-    public class UpdateLocationCommand
+    public class UpdateLocationCommand // Can be replaced with LocationUpdateDto
     {
-        public int IdLocation { get; set; } // The ID of the location to be updated
+        public int IdLocation { get; set; }
         public string LocationName { get; set; } = string.Empty;
     }
 
-    public class UpdateHotelArticleCommand
+    public class UpdateHotelArticleCommand // Can be replaced with HotelArticleUpdateDto
     {
-        public int HotelID { get; set; } // The ID of the hotel to be updated
-        public string HotelName { get; set; } = string.Empty; // Updated name of the hotel
-        public string HotelDescription { get; set; } = string.Empty; // Updated description of the hotel
-        public int HotelStars { get; set; } // Updated rating of the hotel (1-5)
-        public string Street { get; set; } = string.Empty; // Updated street address
-        public string City { get; set; } = string.Empty; // Updated city
-        public string State { get; set; } = string.Empty; // Updated state or region
-        public string ZipCode { get; set; } = string.Empty; // Updated postal code
-        public string Country { get; set; } = string.Empty; // Updated country
-        public List<string> Images { get; set; } = new List<string>(); // Updated list of image URLs or file paths
+        public int HotelID { get; set; }
+        public string HotelName { get; set; } = string.Empty;
+        public string HotelDescription { get; set; } = string.Empty;
+        public int HotelStars { get; set; }
+        public string Street { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string ZipCode { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public List<string> Images { get; set; } = new List<string>();
     }
 
-    public class UpdateCommentCommand
+    public class UpdateCommentCommand // Can be replaced with CommentUpdateDto
     {
-        public int IdComment { get; set; } // The ID of the comment to be updated
-        public string Body { get; set; } = string.Empty; // Updated content of the comment
-        public int HotelID { get; set; } // Foreign key to HotelArticle
+        public int IdComment { get; set; }
+        public string Body { get; set; } = string.Empty;
+        public int HotelID { get; set; }
         public int Rating { get; set; }
     }
 
-    public class UpdateBookingCommand
+    public class UpdateBookingCommand // Can be replaced with BookingUpdateDto
     {
-        public int IdBooking { get; set; } // The ID of the booking to be updated
-        public int UserId { get; set; } // Foreign key to User
-        public int HotelID { get; set; } // Foreign key to HotelArticle
-        public int RoomId { get; set; } // Foreign key to Rooms
+        public int IdBooking { get; set; }
+        public int UserId { get; set; }
+        public int HotelID { get; set; }
+        public int RoomId { get; set; }
         public int NumberOfRooms { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
     }
 
-    public class UpdateAmenityCommand
+    public class UpdateAmenityCommand // Can be replaced with AmenityUpdateDto
     {
-        public int AmenityId { get; set; } // The ID of the amenity to be updated
-        public string Name { get; set; } = string.Empty; // Updated name of the amenity
-        public string Description { get; set; } = string.Empty; // Updated description
-        public bool IsAvailable { get; set; } // Updated availability status
-        public int HotelId { get; set; } // Foreign key to HotelArticles
+        public int AmenityId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool IsAvailable { get; set; }
+        public int HotelId { get; set; }
     }
 }

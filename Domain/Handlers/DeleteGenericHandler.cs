@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using StartMyNewApp.Domain.Interface;
-
+using AutoMapper;
 namespace StartMyNewApp.Domain.Handlers
 {
     public class DeleteGenericHandler<T> where T : class

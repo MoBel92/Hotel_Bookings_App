@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StartMyNewApp.Domain.Commands;
 using StartMyNewApp.Domain.Handlers;
+using StartMyNewApp.Domain.DTOs; // Assuming DTOs are in this namespace
 using StartMyNewApp.Domain.Models;
-
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly AddGenericHandler<User> _addHandler;
-    private readonly UpdateGenericHandler<User> _updateHandler;
+    private readonly AddGenericHandler<User, UserCreateDto> _addHandler;
+    private readonly UpdateGenericHandler<User, UserUpdateDto> _updateHandler;
     private readonly DeleteGenericHandler<User> _deleteHandler;
-    private readonly GetGenericHandler<User> _getHandler;
-    private readonly GetListGenericHandler<User> _getListHandler;
+    private readonly GetGenericHandler<User, UserReadDto> _getHandler;
+    private readonly GetListGenericHandler<User, UserReadDto> _getListHandler;
 
     public UserController(
-        AddGenericHandler<User> addHandler,
-        UpdateGenericHandler<User> updateHandler,
+        AddGenericHandler<User, UserCreateDto> addHandler,
+        UpdateGenericHandler<User, UserUpdateDto> updateHandler,
         DeleteGenericHandler<User> deleteHandler,
-        GetGenericHandler<User> getHandler,
-        GetListGenericHandler<User> getListHandler)
+        GetGenericHandler<User, UserReadDto> getHandler,
+        GetListGenericHandler<User, UserReadDto> getListHandler)
     {
         _addHandler = addHandler;
         _updateHandler = updateHandler;
@@ -40,50 +39,24 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUser(int id)
     {
         var user = await _getHandler.Handle(id);
-        if (user == null)
-        {
-            return NotFound(); // Return 404 if not found
-        }
-        return Ok(user);
+        return user != null ? Ok(user) : NotFound(); // Return 200 OK or 404 Not Found
     }
 
     // POST: api/User
     [HttpPost]
-    public async Task<IActionResult> AddUser([FromBody] AddUserCommand command)
+    public async Task<IActionResult> AddUser([FromBody] UserCreateDto dto)
     {
-        var user = new User
-        {
-            Username = command.Username,
-            Name = command.Name,
-            Email = command.Email,
-            Password = command.Password,
-            PhoneNumber = command.PhoneNumber
-        };
-
-        await _addHandler.Handle(user);
-        return CreatedAtAction(nameof(GetUser), new { id = user.IdUser }, user); // Return 201 Created
+        if (dto == null) return BadRequest("User cannot be null");
+        await _addHandler.Handle(dto);
+        return CreatedAtAction(nameof(GetUser), new { id = dto.Username }, dto); // Adjust based on ID usage
     }
 
     // PUT: api/User/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserCommand command)
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto dto)
     {
-        if (id != command.IdUser)
-        {
-            return BadRequest("User ID mismatch"); // Return 400 Bad Request
-        }
-
-        var user = new User
-        {
-            IdUser = command.IdUser,
-            Username = command.Username,
-            Name = command.Name,
-            Email = command.Email,
-            Password = command.Password,
-            PhoneNumber = command.PhoneNumber
-        };
-
-        await _updateHandler.Handle(user);
+        if (id != dto.IdUser) return BadRequest("User ID mismatch"); // Return 400 Bad Request
+        await _updateHandler.Handle(dto);
         return NoContent(); // Return 204 No Content
     }
 

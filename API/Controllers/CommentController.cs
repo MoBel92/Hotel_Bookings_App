@@ -1,24 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
-using StartMyNewApp.Domain.Commands;
 using StartMyNewApp.Domain.Handlers;
+using StartMyNewApp.Domain.DTOs; // Assuming DTOs are in this namespace
 using StartMyNewApp.Domain.Models;
-
 [ApiController]
 [Route("api/[controller]")]
 public class CommentController : ControllerBase
 {
-    private readonly AddGenericHandler<Comment> _addHandler;
-    private readonly UpdateGenericHandler<Comment> _updateHandler;
+    private readonly AddGenericHandler<Comment, CommentCreateDto> _addHandler;
+    private readonly UpdateGenericHandler<Comment, CommentUpdateDto> _updateHandler;
     private readonly DeleteGenericHandler<Comment> _deleteHandler;
-    private readonly GetGenericHandler<Comment> _getHandler;
-    private readonly GetListGenericHandler<Comment> _getListHandler;
+    private readonly GetGenericHandler<Comment, CommentReadDto> _getHandler;
+    private readonly GetListGenericHandler<Comment, CommentReadDto> _getListHandler;
 
     public CommentController(
-        AddGenericHandler<Comment> addHandler,
-        UpdateGenericHandler<Comment> updateHandler,
+        AddGenericHandler<Comment, CommentCreateDto> addHandler,
+        UpdateGenericHandler<Comment, CommentUpdateDto> updateHandler,
         DeleteGenericHandler<Comment> deleteHandler,
-        GetGenericHandler<Comment> getHandler,
-        GetListGenericHandler<Comment> getListHandler)
+        GetGenericHandler<Comment, CommentReadDto> getHandler,
+        GetListGenericHandler<Comment, CommentReadDto> getListHandler)
     {
         _addHandler = addHandler;
         _updateHandler = updateHandler;
@@ -40,44 +39,24 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> GetComment(int id)
     {
         var comment = await _getHandler.Handle(id);
-        if (comment == null)
-        {
-            return NotFound(); // Return 404 if not found
-        }
-        return Ok(comment);
+        return comment != null ? Ok(comment) : NotFound(); // Return 200 OK or 404 Not Found
     }
 
     // POST: api/Comment
     [HttpPost]
-    public async Task<IActionResult> AddComment([FromBody] AddCommentCommand command)
+    public async Task<IActionResult> AddComment([FromBody] CommentCreateDto dto)
     {
-        var comment = new Comment
-        {
-            Body = command.Body,
-            HotelID = command.HotelID
-        };
-
-        await _addHandler.Handle(comment);
-        return CreatedAtAction(nameof(GetComment), new { id = comment.IdComment }, comment); // Return 201 Created
+        if (dto == null) return BadRequest("Comment cannot be null");
+        await _addHandler.Handle(dto);
+        return CreatedAtAction(nameof(GetComment), new { id = dto.HotelID }, dto); // Adjust ID if necessary
     }
 
     // PUT: api/Comment/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateComment(int id, [FromBody] UpdateCommentCommand command)
+    public async Task<IActionResult> UpdateComment(int id, [FromBody] CommentUpdateDto dto)
     {
-        if (id != command.IdComment)
-        {
-            return BadRequest("Comment ID mismatch"); // Return 400 Bad Request
-        }
-
-        var comment = new Comment
-        {
-            IdComment = command.IdComment,
-            Body = command.Body,
-            HotelID = command.HotelID
-        };
-
-        await _updateHandler.Handle(comment);
+        if (id != dto.IdComment) return BadRequest("Comment ID mismatch"); // Return 400 Bad Request
+        await _updateHandler.Handle(dto);
         return NoContent(); // Return 204 No Content
     }
 

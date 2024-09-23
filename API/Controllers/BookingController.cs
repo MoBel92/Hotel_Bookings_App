@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StartMyNewApp.Domain.Commands;
 using StartMyNewApp.Domain.Handlers;
+using StartMyNewApp.Domain.DTOs; // Assuming DTOs are in this namespace
 using StartMyNewApp.Domain.Models;
-
 [ApiController]
 [Route("api/[controller]")]
 public class BookingController : ControllerBase
 {
-    private readonly AddGenericHandler<Booking> _addHandler;
-    private readonly UpdateGenericHandler<Booking> _updateHandler;
+    private readonly AddGenericHandler<Booking, BookingCreateDto> _addHandler;
+    private readonly UpdateGenericHandler<Booking, BookingUpdateDto> _updateHandler;
     private readonly DeleteGenericHandler<Booking> _deleteHandler;
-    private readonly GetGenericHandler<Booking> _getHandler;
-    private readonly GetListGenericHandler<Booking> _getListHandler;
+    private readonly GetGenericHandler<Booking, BookingReadDto> _getHandler;
+    private readonly GetListGenericHandler<Booking, BookingReadDto> _getListHandler;
 
     public BookingController(
-        AddGenericHandler<Booking> addHandler,
-        UpdateGenericHandler<Booking> updateHandler,
+        AddGenericHandler<Booking, BookingCreateDto> addHandler,
+        UpdateGenericHandler<Booking, BookingUpdateDto> updateHandler,
         DeleteGenericHandler<Booking> deleteHandler,
-        GetGenericHandler<Booking> getHandler,
-        GetListGenericHandler<Booking> getListHandler)
+        GetGenericHandler<Booking, BookingReadDto> getHandler,
+        GetListGenericHandler<Booking, BookingReadDto> getListHandler)
     {
         _addHandler = addHandler;
         _updateHandler = updateHandler;
@@ -40,48 +39,24 @@ public class BookingController : ControllerBase
     public async Task<IActionResult> GetBooking(int id)
     {
         var booking = await _getHandler.Handle(id);
-        if (booking == null)
-        {
-            return NotFound(); // Return 404 if not found
-        }
-        return Ok(booking);
+        return booking != null ? Ok(booking) : NotFound(); // Return 200 OK or 404 Not Found
     }
 
     // POST: api/Booking
     [HttpPost]
-    public async Task<IActionResult> AddBooking([FromBody] AddBookingCommand command)
+    public async Task<IActionResult> AddBooking([FromBody] BookingCreateDto dto)
     {
-        var booking = new Booking
-        {
-            UserId = command.UserId,
-            HotelID = command.HotelID,
-            CheckInDate = command.CheckInDate,
-            CheckOutDate = command.CheckOutDate
-        };
-
-        await _addHandler.Handle(booking);
-        return CreatedAtAction(nameof(GetBooking), new { id = booking.IdBooking }, booking); // Return 201 Created
+        if (dto == null) return BadRequest("Booking data cannot be null");
+        await _addHandler.Handle(dto);
+        return CreatedAtAction(nameof(GetBooking), new { id = dto.UserId }, dto); // Adjust ID for the specific use case
     }
 
     // PUT: api/Booking/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingCommand command)
+    public async Task<IActionResult> UpdateBooking(int id, [FromBody] BookingUpdateDto dto)
     {
-        if (id != command.IdBooking)
-        {
-            return BadRequest("Booking ID mismatch"); // Return 400 Bad Request
-        }
-
-        var booking = new Booking
-        {
-            IdBooking = command.IdBooking,
-            UserId = command.UserId,
-            HotelID = command.HotelID,
-            CheckInDate = command.CheckInDate,
-            CheckOutDate = command.CheckOutDate
-        };
-
-        await _updateHandler.Handle(booking);
+        if (id != dto.IdBooking) return BadRequest("Booking ID mismatch"); // Return 400 Bad Request
+        await _updateHandler.Handle(dto);
         return NoContent(); // Return 204 No Content
     }
 
