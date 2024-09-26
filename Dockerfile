@@ -24,5 +24,6 @@ RUN dotnet publish "API.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "API.dll"]
 
+# Run migrations and then start the application
+ENTRYPOINT ["bash", "-c", "dotnet API.dll & dotnet ef database update"]
