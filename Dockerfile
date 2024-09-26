@@ -11,6 +11,10 @@ WORKDIR /src
 COPY ["API/API.csproj", "API/"]
 RUN dotnet restore "API/API.csproj"
 
+# Install EF Tools
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
 # Copy the rest of the application code and build it
 COPY . .
 WORKDIR "/src/API"
@@ -25,5 +29,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Run migrations and then start the application
-ENTRYPOINT ["bash", "-c", "dotnet API.dll & dotnet ef database update"]
+# Run migrations
+RUN dotnet ef database update
+
+ENTRYPOINT ["dotnet", "API.dll"]
