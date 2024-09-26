@@ -13,7 +13,7 @@ namespace StartMyNewApp.Domain.MappingProfiles
             CreateMap<UserUpdateDto, User>();
             CreateMap<User, UserReadDto>();
 
-            // HotelArticles mappings
+            // HotelArticle mappings
             CreateMap<HotelArticleCreateDto, HotelArticle>();
             CreateMap<HotelArticleUpdateDto, HotelArticle>();
             CreateMap<HotelArticle, HotelArticleReadDto>();
@@ -33,11 +33,6 @@ namespace StartMyNewApp.Domain.MappingProfiles
             CreateMap<BookingUpdateDto, Booking>();
             CreateMap<Booking, BookingReadDto>();
 
-            // Location mappings
-            CreateMap<LocationCreateDto, Location>();
-            CreateMap<LocationUpdateDto, Location>();
-            CreateMap<Location, LocationReadDto>();
-
             // Wishlist mappings
             CreateMap<WishlistCreateDto, Wishlist>();
             CreateMap<WishlistUpdateDto, Wishlist>();
@@ -47,6 +42,21 @@ namespace StartMyNewApp.Domain.MappingProfiles
             CreateMap<AmenityCreateDto, Amenity>();
             CreateMap<AmenityUpdateDto, Amenity>();
             CreateMap<Amenity, AmenityReadDto>();
+
+            // Comment mappings
+            CreateMap<CommentCreateDto, Comment>();
+            CreateMap<CommentUpdateDto, Comment>();
+            CreateMap<Comment, CommentReadDto>();
+
+            // Message mappings
+            CreateMap<MessageCreateDto, Message>();
+            CreateMap<MessageUpdateDto, Message>();
+            CreateMap<Message, MessageReadDto>();
+
+            // Notification mappings
+            CreateMap<NotificationCreateDto, Notification>();
+            CreateMap<NotificationUpdateDto, Notification>();
+            CreateMap<Notification, NotificationReadDto>();
 
             // Add any additional mappings as needed
         }

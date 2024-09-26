@@ -7,11 +7,13 @@
         public string Name { get; set; } = string.Empty; // Full name
         public string Email { get; set; } = string.Empty; // Email address
         public string PhoneNumber { get; set; } = string.Empty; // Phone number
+        public string Role { get; set; } = "User"; // Role: User, Admin, Owner
 
-        // You can include related data minimally if required, like:
-        public List<string> BookingIds { get; set; } = new List<string>(); // List of booking identifiers (if needed)
-        public List<string> WishlistIds { get; set; } = new List<string>(); // List of wishlist identifiers (if needed)
-        public List<string> PaymentIds { get; set; } = new List<string>(); // List of payment identifiers (if needed)
+        // Include lists of related entities minimally if required
+        public List<int> BookingIds { get; set; } = new List<int>(); // List of booking identifiers
+        public List<int> WishlistIds { get; set; } = new List<int>(); // List of wishlist identifiers
+        public List<int> PaymentIds { get; set; } = new List<int>(); // List of payment identifiers
+        public List<int> OwnedHotelIds { get; set; } = new List<int>(); // List of owned hotel identifiers (if role is Owner)
     }
 }
 

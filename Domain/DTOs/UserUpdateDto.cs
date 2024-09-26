@@ -6,6 +6,7 @@
         public string Name { get; set; } = string.Empty; // Updated full name
         public string Email { get; set; } = string.Empty; // Updated email address
         public string PhoneNumber { get; set; } = string.Empty; // Updated phone number
-        // Optionally, you can include fields for updating the password securely if required
+        public string Role { get; set; } = "User"; // Role: User, Admin, Owner
+        // Optional: Handle role updates securely based on admin privileges
     }
 }

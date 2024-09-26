@@ -2,12 +2,14 @@
 {
     public class CommentReadDto
     {
-        public int IdComment { get; set; } // Unique identifier for the comment
-        public string Body { get; set; } = string.Empty; // Body of the comment
-        public int Rating { get; set; } // Rating of the comment
+        public int IdComment { get; set; } // Primary key
+        public string Body { get; set; } = string.Empty; // Comment body
+        public int HotelID { get; set; } // ID of the related hotel
+        public int Rating { get; set; } // User rating
+        public string AdminReply { get; set; } = string.Empty; // Admin response if any
 
-        // Optional: include minimal related information if needed
-        public string HotelName { get; set; } = string.Empty; // Name of the associated hotel
-        public string Username { get; set; } = string.Empty; // Username of the user who made the comment
+        // Minimal related data
+        public string UserName { get; set; } = string.Empty; // Name of the user who commented
+        public string HotelName { get; set; } = string.Empty; // Name of the hotel commented on
     }
 }

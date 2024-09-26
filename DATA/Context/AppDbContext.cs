@@ -16,6 +16,8 @@ namespace DATA.Context
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Amenity> Amenities { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Notification> Notifications { get; set; } // Added DbSet for Notification
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +33,8 @@ namespace DATA.Context
             modelBuilder.Entity<Payment>().HasKey(p => p.PaymentId);
             modelBuilder.Entity<Wishlist>().HasKey(w => w.WishlistId);
             modelBuilder.Entity<Amenity>().HasKey(a => a.AmenityId);
+            modelBuilder.Entity<Message>().HasKey(m => m.MessageId);
+            modelBuilder.Entity<Notification>().HasKey(n => n.NotificationId); // Configure primary key for Notification
 
             // Define relationships
             modelBuilder.Entity<Comment>()
@@ -39,11 +43,17 @@ namespace DATA.Context
                 .HasForeignKey(c => c.HotelID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.User)
                 .WithMany(u => u.Bookings)
                 .HasForeignKey(b => b.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascading
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.HotelArticle)
@@ -55,19 +65,19 @@ namespace DATA.Context
                 .HasOne(r => r.HotelArticle)
                 .WithMany(h => h.Rooms)
                 .HasForeignKey(r => r.HotelId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascading
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Use Restrict
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.Booking)
                 .WithMany(b => b.Payments)
                 .HasForeignKey(p => p.BookingId)
-                .OnDelete(DeleteBehavior.Cascade); // You can keep this as Cascade if needed
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Wishlist>()
                 .HasOne(w => w.User)
@@ -86,6 +96,24 @@ namespace DATA.Context
                 .WithMany(h => h.Amenities)
                 .HasForeignKey(a => a.HotelId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany(u => u.SentMessages)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany(u => u.ReceivedMessages)
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Relationship with User for notifications
 
             // Specify precision and scale for decimal properties
             modelBuilder.Entity<Payment>()
