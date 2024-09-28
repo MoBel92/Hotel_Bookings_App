@@ -44,22 +44,30 @@ namespace DATA.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comment>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+    .HasOne(c => c.User)
+    .WithMany(u => u.Comments)
+    .HasForeignKey(c => c.UserId)
+    .OnDelete(DeleteBehavior.NoAction); // Change this to NoAction
+
 
             modelBuilder.Entity<Booking>()
-                .HasOne(b => b.User)
-                .WithMany(u => u.Bookings)
-                .HasForeignKey(b => b.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+     .HasOne(b => b.User)
+     .WithMany(u => u.Bookings)
+     .HasForeignKey(b => b.UserId)
+     .OnDelete(DeleteBehavior.Restrict); // Modify this to suit your relationship needs
 
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.HotelArticle)
                 .WithMany(h => h.Bookings)
                 .HasForeignKey(b => b.HotelID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Room)
+                .WithMany(r => r.Bookings)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<Room>()
                 .HasOne(r => r.HotelArticle)
@@ -80,16 +88,17 @@ namespace DATA.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Wishlist>()
-                .HasOne(w => w.User)
-                .WithMany(u => u.Wishlists)
-                .HasForeignKey(w => w.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+    .HasOne(w => w.User)
+    .WithMany(u => u.Wishlists)
+    .HasForeignKey(w => w.UserId)
+    .OnDelete(DeleteBehavior.NoAction); // Change from Cascade to NoAction
 
             modelBuilder.Entity<Wishlist>()
                 .HasOne(w => w.HotelArticle)
                 .WithMany(h => h.Wishlists)
                 .HasForeignKey(w => w.HotelId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Keep this as Cascade if desired
+
 
             modelBuilder.Entity<Amenity>()
                 .HasOne(a => a.HotelArticle)

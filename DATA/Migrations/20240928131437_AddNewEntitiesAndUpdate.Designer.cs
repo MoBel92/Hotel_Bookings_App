@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240923212208_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240928131437_AddNewEntitiesAndUpdate")]
+    partial class AddNewEntitiesAndUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,6 +96,10 @@ namespace DATA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComment"));
 
+                    b.Property<string>("AdminReply")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -106,14 +110,14 @@ namespace DATA.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserIdUser")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("IdComment");
 
                     b.HasIndex("HotelID");
 
-                    b.HasIndex("UserIdUser");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -149,6 +153,16 @@ namespace DATA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Policies")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("State")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -162,6 +176,8 @@ namespace DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HotelID");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("HotelArticles");
                 });
@@ -181,6 +197,67 @@ namespace DATA.Migrations
                     b.HasKey("IdLocation");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("StartMyNewApp.Domain.Models.Message", b =>
+                {
+                    b.Property<int>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MessageBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("StartMyNewApp.Domain.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("NotificationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("StartMyNewApp.Domain.Models.Payment", b =>
@@ -257,6 +334,9 @@ namespace DATA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -266,6 +346,14 @@ namespace DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -354,10 +442,53 @@ namespace DATA.Migrations
                         .IsRequired();
 
                     b.HasOne("StartMyNewApp.Domain.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserIdUser");
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("HotelArticle");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StartMyNewApp.Domain.Models.HotelArticle", b =>
+                {
+                    b.HasOne("StartMyNewApp.Domain.Models.User", "Owner")
+                        .WithMany("OwnedHotels")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("StartMyNewApp.Domain.Models.Message", b =>
+                {
+                    b.HasOne("StartMyNewApp.Domain.Models.User", "Receiver")
+                        .WithMany("ReceivedMessages")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StartMyNewApp.Domain.Models.User", "Sender")
+                        .WithMany("SentMessages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("StartMyNewApp.Domain.Models.Notification", b =>
+                {
+                    b.HasOne("StartMyNewApp.Domain.Models.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -433,7 +564,17 @@ namespace DATA.Migrations
                 {
                     b.Navigation("Bookings");
 
+                    b.Navigation("Comments");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("OwnedHotels");
+
                     b.Navigation("Payments");
+
+                    b.Navigation("ReceivedMessages");
+
+                    b.Navigation("SentMessages");
 
                     b.Navigation("Wishlists");
                 });

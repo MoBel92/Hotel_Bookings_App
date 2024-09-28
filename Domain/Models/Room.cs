@@ -9,6 +9,7 @@
         public int HotelId { get; set; } // Foreign key to HotelArticle
 
         public virtual HotelArticle? HotelArticle { get; set; } // Make this nullable
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }
 

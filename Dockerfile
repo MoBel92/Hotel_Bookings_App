@@ -32,4 +32,5 @@ COPY --from=publish /app/publish .
 # Run migrations
 RUN dotnet ef database update
 
+# Start the application
 ENTRYPOINT ["dotnet", "API.dll"]
