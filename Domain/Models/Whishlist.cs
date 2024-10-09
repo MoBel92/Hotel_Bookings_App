@@ -2,11 +2,11 @@
 {
     public class Wishlist
     {
-        public int WishlistId { get; set; } // Unique identifier for the wishlist entry
-        public int UserId { get; set; } // Foreign key to Users
-        public int HotelId { get; set; } // Foreign key to HotelArticles
-        public DateTime AddedDate { get; set; } // Date the hotel was added to the wishlist
-        public bool IsActive { get; set; } // Indicates if the wishlist entry is active
+        public int WishlistId { get; set; } 
+        public int UserId { get; set; } 
+        public int HotelId { get; set; } 
+        public DateTime AddedDate { get; set; } 
+        public bool IsActive { get; set; } 
 
         // Navigation properties
         public virtual User User { get; set; } = null!; // Non-nullable property with an initializer

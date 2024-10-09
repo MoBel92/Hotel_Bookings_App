@@ -2,11 +2,11 @@
 {
     public class Comment
     {
-        public int IdComment { get; set; } // Primary key
-        public string Body { get; set; } = string.Empty; // Comment body
+        public int IdComment { get; set; } 
+        public string Body { get; set; } = string.Empty;
         public int HotelID { get; set; } // Foreign key to HotelArticle
         public int UserId { get; set; } // Foreign key to User
-        public int Rating { get; set; } // User rating
+        public int Rating { get; set; } 
         public string AdminReply { get; set; } = string.Empty; // Optional admin response to the comment
 
         // Navigation properties

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StartMyNewApp.Domain.Handlers;
-using StartMyNewApp.Domain.DTOs; // Assuming DTOs are in this namespace
+using StartMyNewApp.Domain.DTOs;
 using StartMyNewApp.Domain.Models;
 [ApiController]
 [Route("api/[controller]")]

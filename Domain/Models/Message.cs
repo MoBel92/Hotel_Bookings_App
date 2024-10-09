@@ -2,10 +2,10 @@
 {
     public class Message
     {
-        public int MessageId { get; set; } // Primary key
+        public int MessageId { get; set; } 
         public int SenderId { get; set; } // Foreign key to User (sender)
         public int ReceiverId { get; set; } // Foreign key to User (receiver)
-        public string MessageBody { get; set; } = string.Empty; // Content of the message
+        public string MessageBody { get; set; } = string.Empty; 
         public DateTime SentDate { get; set; } = DateTime.Now; // Date the message was sent
         public bool IsRead { get; set; } = false; // Read status of the message
 

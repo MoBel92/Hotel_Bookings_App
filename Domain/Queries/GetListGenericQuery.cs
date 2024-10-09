@@ -4,7 +4,7 @@
     {
         public GetListGenericQuery()
         {
-            // Initialization if needed
+            
         }
     }
 }

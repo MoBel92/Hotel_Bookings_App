@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using StartMyNewApp.Domain.Interface;
-using AutoMapper; // Assuming AutoMapper is used for mapping.
+using AutoMapper; 
 
 namespace StartMyNewApp.Domain.Handlers
 {

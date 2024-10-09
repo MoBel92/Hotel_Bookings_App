@@ -2,7 +2,7 @@
 {
     public class Location
     {
-        public int IdLocation { get; set; } // Primary key
-        public string LocationName { get; set; } = string.Empty; // Name of the location
+        public int IdLocation { get; set; } 
+        public string LocationName { get; set; } = string.Empty; 
     }
 }

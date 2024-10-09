@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StartMyNewApp.Domain.Interface;  // Corrected namespace for IGenericRepository
-using DATA.Context;  // Corrected namespace for AppDbContext
+using StartMyNewApp.Domain.Interface;  
+using DATA.Context;  
 
 namespace StartMyNewApp.Infra.Repositories
 {

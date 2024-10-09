@@ -5,7 +5,7 @@ using DATA.Context;
 using Microsoft.OpenApi.Models;
 using StartMyNewApp.Domain.Handlers;
 using AutoMapper; // AutoMapper for DTO to model mapping
-using StartMyNewApp.Domain.MappingProfiles; // Adjust this if the profile is in another namespace
+using StartMyNewApp.Domain.MappingProfiles; 
 
 var builder = WebApplication.CreateBuilder(args);
 

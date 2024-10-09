@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StartMyNewApp.Domain.Handlers;
-using StartMyNewApp.Domain.DTOs; // Assuming DTOs are in this namespace
+using StartMyNewApp.Domain.DTOs; 
 using System.Linq;
 using StartMyNewApp.Domain.Models;
 
@@ -76,7 +76,7 @@ public class HotelArticleController : ControllerBase
             return BadRequest("HotelArticle cannot be null"); // Return 400 Bad Request if DTO is null
         }
         await _addHandler.Handle(dto);
-        return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelName }, dto); // Adjust ID if necessary
+        return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelName }, dto); 
     }
 
     // PUT: api/HotelArticle/{id}

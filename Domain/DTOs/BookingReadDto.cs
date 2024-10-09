@@ -2,9 +2,9 @@
 {
     public class BookingReadDto
     {
-        public int IdBooking { get; set; } // Unique identifier for the booking
-        public DateTime CheckInDate { get; set; } // Check-in date of the booking
-        public DateTime CheckOutDate { get; set; } // Check-out date of the booking
+        public int IdBooking { get; set; } 
+        public DateTime CheckInDate { get; set; } 
+        public DateTime CheckOutDate { get; set; } 
 
         // Optional: include minimal related information if needed
         public string Username { get; set; } = string.Empty; // Username of the user who made the booking

@@ -2,7 +2,7 @@
 {
     public class NotificationUpdateDto
     {
-        public int NotificationId { get; set; } // Primary key
-        public bool IsRead { get; set; } = false; // Updated read status of the notification
+        public int NotificationId { get; set; } 
+        public bool IsRead { get; set; } = false; 
     }
 }

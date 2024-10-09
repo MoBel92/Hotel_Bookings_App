@@ -2,8 +2,8 @@
 {
     public class MessageCreateDto
     {
-        public int SenderId { get; set; } // ID of the user sending the message
-        public int ReceiverId { get; set; } // ID of the user receiving the message
-        public string MessageBody { get; set; } = string.Empty; // Content of the message
+        public int SenderId { get; set; } 
+        public int ReceiverId { get; set; } 
+        public string MessageBody { get; set; } = string.Empty; 
     }
 }

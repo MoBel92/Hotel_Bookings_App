@@ -1,4 +1,4 @@
-﻿namespace StartMyNewApp.Domain.Interface  // You can adjust the namespace to match your folder structure
+﻿namespace StartMyNewApp.Domain.Interface  
 {
     public interface IGenericRepository<T> where T : class
     {

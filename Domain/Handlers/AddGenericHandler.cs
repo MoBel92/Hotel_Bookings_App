@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using StartMyNewApp.Domain.Interface;
-using AutoMapper; // Assuming you are using AutoMapper, add this reference.
+using AutoMapper; 
 
 namespace StartMyNewApp.Domain.Handlers
 {

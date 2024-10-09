@@ -31,7 +31,7 @@ namespace StartMyNewApp.Domain.Handlers
             {
                 // Log the exception or rethrow it as needed
                 Console.WriteLine($"Error deleting entity: {ex.Message}");
-                throw; // Optionally rethrow if you want to propagate the error
+                throw; 
             }
         }
 
