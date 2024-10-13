@@ -3,6 +3,8 @@ using StartMyNewApp.Domain.Handlers;
 using StartMyNewApp.Domain.DTOs; 
 using System.Linq;
 using StartMyNewApp.Domain.Models;
+using Microsoft.AspNetCore.Http;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -66,18 +68,46 @@ public class HotelArticleController : ControllerBase
         }
         return Ok(hotelArticle); // Return 200 OK with the found hotel article
     }
-
     // POST: api/HotelArticle
     [HttpPost]
-    public async Task<IActionResult> AddHotelArticle([FromBody] HotelArticleCreateDto dto)
+    public async Task<IActionResult> AddHotelArticle([FromForm] HotelArticleCreateDto dto)
     {
         if (dto == null)
         {
-            return BadRequest("HotelArticle cannot be null"); // Return 400 Bad Request if DTO is null
+            return BadRequest("HotelArticle cannot be null");
         }
+
+        // Handle the uploaded images
+        List<string> imagePaths = new List<string>();
+        if (dto.Images != null && dto.Images.Count > 0)
+        {
+            foreach (var formFile in dto.Images)
+            {
+                if (formFile.Length > 0)
+                {
+                    // Define the path where the file will be stored
+                    var filePath = Path.Combine("wwwroot", "uploads", formFile.FileName);
+
+                    // Save the file to the server (adjust path as needed)
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+
+                    // Store the relative path to the uploaded file
+                    imagePaths.Add("/uploads/" + formFile.FileName);
+                }
+            }
+        }
+
+        // Add the image paths to the DTO
+        dto.ImagePaths = imagePaths;
+
         await _addHandler.Handle(dto);
-        return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelName }, dto); 
+        return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelName }, dto);
     }
+
+
 
     // PUT: api/HotelArticle/{id}
     [HttpPut("{id}")]
