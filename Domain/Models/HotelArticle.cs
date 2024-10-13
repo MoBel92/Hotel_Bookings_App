@@ -13,11 +13,13 @@
         public string Country { get; set; } = string.Empty; 
         public List<string> Images { get; set; } = new List<string>(); 
         public string Policies { get; set; } = string.Empty; 
-        public bool IsAvailable { get; set; } = true; 
+        public bool IsAvailable { get; set; } = true;
 
-        // Owner/Admin properties
-        public int OwnerId { get; set; } // Foreign key to User with Owner/Admin role
-        public virtual User Owner { get; set; } = null!; // Owner of the hotel
+        // Make OwnerId optional
+        public int? OwnerId { get; set; } // Nullable OwnerId
+
+        // Other relationships and navigation properties
+        public virtual User? Owner { get; set; } // Nullable relationship
 
         // Navigation properties
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
