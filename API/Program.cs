@@ -44,7 +44,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy => policy.WithOrigins("http://localhost:3000") // Your frontend URL
                         .AllowAnyHeader()
-                        .AllowAnyMethod());
+                        .AllowAnyMethod()
+                        .AllowCredentials());
 });
 
 var app = builder.Build();
