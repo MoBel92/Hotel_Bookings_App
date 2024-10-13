@@ -5,7 +5,7 @@ using DATA.Context;
 using Microsoft.OpenApi.Models;
 using StartMyNewApp.Domain.Handlers;
 using AutoMapper; // AutoMapper for DTO to model mapping
-using StartMyNewApp.Domain.MappingProfiles; 
+using StartMyNewApp.Domain.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,13 +38,13 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotel_Bookings_App", Version = "v1" });
 });
 
-// Add CORS if needed
+// Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
+    options.AddPolicy("AllowSpecificOrigins",
+        policy => policy.WithOrigins("http://localhost:3000") // Your frontend URL
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -63,8 +63,9 @@ if (!app.Environment.IsProduction())
     app.UseHttpsRedirection();
 }
 
-// Use CORS policy
-app.UseCors("AllowAllOrigins");
+// Use CORS
+app.UseCors("AllowSpecificOrigins");
+
 app.UseAuthorization();
 
 // Map controllers
