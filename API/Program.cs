@@ -42,10 +42,9 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        policy => policy.WithOrigins("http://localhost:3000") // Your frontend URL
+        policy => policy.AllowAnyOrigin() // Consider allowing any origin for development (temporarily)
                         .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials());
+                        .AllowAnyMethod());
 });
 
 var app = builder.Build();

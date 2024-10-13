@@ -68,6 +68,7 @@ public class HotelArticleController : ControllerBase
         }
         return Ok(hotelArticle); // Return 200 OK with the found hotel article
     }
+
     // POST: api/HotelArticle
     [HttpPost]
     public async Task<IActionResult> AddHotelArticle([FromForm] HotelArticleCreateDto dto)
@@ -75,6 +76,13 @@ public class HotelArticleController : ControllerBase
         if (dto == null)
         {
             return BadRequest("HotelArticle cannot be null");
+        }
+
+        // Create the "wwwroot/uploads" directory if it doesn't exist
+        var uploadPath = Path.Combine("wwwroot", "uploads");
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath); // Create the directory if it doesn't exist
         }
 
         // Handle the uploaded images
@@ -86,15 +94,15 @@ public class HotelArticleController : ControllerBase
                 if (formFile.Length > 0)
                 {
                     // Define the path where the file will be stored
-                    var filePath = Path.Combine("wwwroot", "uploads", formFile.FileName);
+                    var filePath = Path.Combine(uploadPath, formFile.FileName);
 
-                    // Save the file to the server (adjust path as needed)
+                    // Save the file to the server
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await formFile.CopyToAsync(stream);
                     }
 
-                    // Store the relative path to the uploaded file
+                    // Store the relative path to the uploaded file (to be saved in the database)
                     imagePaths.Add("/uploads/" + formFile.FileName);
                 }
             }
@@ -103,7 +111,10 @@ public class HotelArticleController : ControllerBase
         // Add the image paths to the DTO
         dto.ImagePaths = imagePaths;
 
+        // Call the handler to add the hotel article
         await _addHandler.Handle(dto);
+
+        // Return a success response
         return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelName }, dto);
     }
 
