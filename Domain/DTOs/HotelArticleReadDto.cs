@@ -10,8 +10,8 @@
         public string City { get; set; } = string.Empty; 
         public string State { get; set; } = string.Empty; 
         public string ZipCode { get; set; } = string.Empty; 
-        public string Country { get; set; } = string.Empty; 
-        public List<string> Images { get; set; } = new List<string>();
+        public string Country { get; set; } = string.Empty;
+        public List<string> ImagePaths { get; set; } = new List<string>();
 
         // Owner/Admin properties
         public int OwnerId { get; set; } 

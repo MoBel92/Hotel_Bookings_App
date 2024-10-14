@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StartMyNewApp.Domain.Handlers;
-using StartMyNewApp.Domain.DTOs; 
+using StartMyNewApp.Domain.DTOs;
 using System.Linq;
 using StartMyNewApp.Domain.Models;
 using Microsoft.AspNetCore.Http;
-
+using System.IO;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -78,7 +78,7 @@ public class HotelArticleController : ControllerBase
             return BadRequest("HotelArticle cannot be null");
         }
 
-        // Create the "wwwroot/uploads" directory if it doesn't exist
+        // Ensure the "wwwroot/uploads" directory exists
         var uploadPath = Path.Combine("wwwroot", "uploads");
         if (!Directory.Exists(uploadPath))
         {
@@ -117,8 +117,6 @@ public class HotelArticleController : ControllerBase
         // Return a success response
         return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelName }, dto);
     }
-
-
 
     // PUT: api/HotelArticle/{id}
     [HttpPut("{id}")]

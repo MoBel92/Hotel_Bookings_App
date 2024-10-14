@@ -49,6 +49,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Enable static file serving (for wwwroot)
+app.UseStaticFiles(); // This is required to serve images and other static files from the wwwroot folder
+
 // Configure the HTTP request pipeline
 app.UseSwagger();
 app.UseSwaggerUI(c =>
