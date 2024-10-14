@@ -14,10 +14,13 @@ namespace StartMyNewApp.Domain.MappingProfiles
             CreateMap<User, UserReadDto>();
 
             // HotelArticle mappings
-            CreateMap<HotelArticleCreateDto, HotelArticle>();
-            CreateMap<HotelArticleUpdateDto, HotelArticle>();
-            CreateMap<HotelArticle, HotelArticleReadDto>();
+            CreateMap<HotelArticleCreateDto, HotelArticle>()
+                .ForMember(dest => dest.ImagePaths, opt => opt.MapFrom(src => src.ImagePaths)); // Map ImagePaths
 
+            CreateMap<HotelArticleUpdateDto, HotelArticle>()
+                .ForMember(dest => dest.ImagePaths, opt => opt.MapFrom(src => src.ImagePaths)); // Map ImagePaths
+
+            CreateMap<HotelArticle, HotelArticleReadDto>();
             // Room mappings
             CreateMap<RoomCreateDto, Room>();
             CreateMap<RoomUpdateDto, Room>();
