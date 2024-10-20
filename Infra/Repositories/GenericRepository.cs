@@ -2,7 +2,6 @@
 using StartMyNewApp.Domain.Interface;
 using DATA.Context;
 
-
 namespace StartMyNewApp.Infra.Repositories
 {
     // Custom exception for entity not found scenarios
@@ -37,25 +36,25 @@ namespace StartMyNewApp.Infra.Repositories
             // If the entity supports soft deletion, filter out deleted entities
             if (typeof(ISoftDeletable).IsAssignableFrom(typeof(T)))
             {
-                query = query.Where(e => (e as ISoftDeletable).IsDeleted == false);
+                query = query.Where(e => (e as ISoftDeletable)!.IsDeleted == false);
             }
 
             return await query.ToListAsync();
         }
 
-        // Fetch a single entity of type T by its ID, throws an exception if not found
-        public async Task<T> GetAsync(int id)
+        // Fetch a single entity of type T by its ID, returns null if not found
+        public async Task<T?> GetAsync(int id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
             if (entity == null)
             {
-                throw new EntityNotFoundException($"{typeof(T).Name} with Id {id} not found.");
+                return null; // Return null if entity is not found
             }
 
-            // Check if the entity is soft deleted and throw an exception if necessary
+            // Check if the entity is soft deleted and return null if necessary
             if (entity is ISoftDeletable deletableEntity && deletableEntity.IsDeleted)
             {
-                throw new EntityNotFoundException($"{typeof(T).Name} with Id {id} is deleted.");
+                return null; // Return null if the entity is marked as deleted
             }
 
             return entity;
@@ -96,7 +95,20 @@ namespace StartMyNewApp.Infra.Repositories
         // Method to check if the entity exists in the database
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Set<T>().FindAsync(id) != null;
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            // Check for soft deletion if applicable
+            if (entity is ISoftDeletable deletableEntity && deletableEntity.IsDeleted)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
+

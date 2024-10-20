@@ -124,7 +124,7 @@ public class HotelArticleController : ControllerBase
         // Add the image paths to the DTO
         dto.ImagePaths = imagePaths;
 
-        // Call the handler to add the hotel article without assigning a return value
+        // Call the handler to add the hotel article
         await _addHandler.Handle(dto);
 
         // Return a success response
@@ -187,4 +187,5 @@ public class HotelArticleController : ControllerBase
         return NoContent();
     }
 }
+
 
