@@ -37,23 +37,14 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotel_Bookings_App", Version = "v1" });
 });
 
-// Add CORS with environment-based configuration
+// Add open CORS policy for public access (allow all origins, headers, and methods)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigins", policy =>
+    options.AddPolicy("AllowAllOrigins", policy =>
     {
-        if (builder.Environment.IsDevelopment())
-        {
-            // Allow any origin for development
-            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-        }
-        else
-        {
-            // Restrict CORS in production (example: allow specific origins)
-            policy.WithOrigins("https://your-production-domain.com")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        }
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
@@ -62,24 +53,19 @@ var app = builder.Build();
 // Enable static file serving (for wwwroot)
 app.UseStaticFiles(); // To serve images and other static files from wwwroot
 
-// Configure the HTTP request pipeline
-
-// Enable Swagger only in non-production environments
-if (app.Environment.IsDevelopment())
+// Enable Swagger for API documentation
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
-        c.RoutePrefix = string.Empty; // Swagger is available at the root URL
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
+    c.RoutePrefix = string.Empty; // Swagger is available at the root URL
+});
 
-// Use HTTPS redirection for all environments
+// Use HTTPS redirection
 app.UseHttpsRedirection();
 
-// Use CORS
-app.UseCors("AllowSpecificOrigins");
+// Use open CORS policy for all origins
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 
