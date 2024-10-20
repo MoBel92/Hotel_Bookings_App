@@ -47,7 +47,7 @@ namespace DATA.Context
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.NoAction); // Adjusted to NoAction
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.User)
@@ -89,7 +89,7 @@ namespace DATA.Context
                 .HasOne(w => w.User)
                 .WithMany(u => u.Wishlists)
                 .HasForeignKey(w => w.UserId)
-                .OnDelete(DeleteBehavior.NoAction); // NoAction for User
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Wishlist>()
                 .HasOne(w => w.HotelArticle)
@@ -131,6 +131,8 @@ namespace DATA.Context
                 .HasColumnType("decimal(18, 2)");
 
             // Add indexes if necessary (e.g., UserId for frequently queried columns)
+            modelBuilder.Entity<Booking>().HasIndex(b => b.UserId);
+            modelBuilder.Entity<Comment>().HasIndex(c => c.UserId);
         }
     }
 }

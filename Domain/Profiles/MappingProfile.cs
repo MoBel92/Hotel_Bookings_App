@@ -16,9 +16,14 @@ namespace StartMyNewApp.Domain.MappingProfiles
             // HotelArticle mappings
             CreateMap<HotelArticleCreateDto, HotelArticle>()
                 .ForMember(dest => dest.ImagePaths, opt => opt.MapFrom(src => src.ImagePaths)); // Map ImagePaths
+
+            // Conditional update: Update only non-null fields in HotelArticleUpdateDto
             CreateMap<HotelArticleUpdateDto, HotelArticle>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Conditional update mapping
-            CreateMap<HotelArticle, HotelArticleReadDto>();
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // Mapping HotelArticle to its ReadDto
+            CreateMap<HotelArticle, HotelArticleReadDto>()
+                .ForMember(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Owner != null ? src.Owner.Name : "Unknown Owner"));
 
             // Room mappings
             CreateMap<RoomCreateDto, Room>();
@@ -60,7 +65,7 @@ namespace StartMyNewApp.Domain.MappingProfiles
             CreateMap<NotificationUpdateDto, Notification>();
             CreateMap<Notification, NotificationReadDto>();
 
-            // Add any additional mappings as needed
+            // Additional mappings can be added here as needed
         }
     }
 }

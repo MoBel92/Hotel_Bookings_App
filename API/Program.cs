@@ -4,7 +4,6 @@ using StartMyNewApp.Infra.Repositories;
 using DATA.Context;
 using Microsoft.OpenApi.Models;
 using StartMyNewApp.Domain.Handlers;
-
 using StartMyNewApp.Domain.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);

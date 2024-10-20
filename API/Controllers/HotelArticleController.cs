@@ -30,6 +30,12 @@ public class HotelArticleController : ControllerBase
         _getListHandler = getListHandler;
     }
 
+    // Helper to construct full image URLs
+    private string GetFullImageUrl(string imagePath)
+    {
+        return $"{Request.Scheme}://{Request.Host}{imagePath}";
+    }
+
     // GET: api/HotelArticle?sortBy=city&order=asc
     [HttpGet]
     public async Task<IActionResult> GetHotelArticles(string? sortBy = null, string? order = "asc")
@@ -51,6 +57,12 @@ public class HotelArticleController : ControllerBase
             };
         }
 
+        // Ensure full image URLs are returned
+        foreach (var article in hotelArticles)
+        {
+            article.ImagePaths = article.ImagePaths.Select(GetFullImageUrl).ToList();
+        }
+
         return Ok(hotelArticles.ToList());
     }
 
@@ -63,6 +75,10 @@ public class HotelArticleController : ControllerBase
         {
             return NotFound();
         }
+
+        // Add base URL to the image paths
+        hotelArticle.ImagePaths = hotelArticle.ImagePaths.Select(GetFullImageUrl).ToList();
+
         return Ok(hotelArticle);
     }
 
@@ -171,3 +187,4 @@ public class HotelArticleController : ControllerBase
         return NoContent();
     }
 }
+

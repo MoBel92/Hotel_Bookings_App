@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StartMyNewApp.Domain.Interface;
 using DATA.Context;
-using System.Threading.Tasks;
+
 
 namespace StartMyNewApp.Infra.Repositories
 {
@@ -91,6 +91,12 @@ namespace StartMyNewApp.Infra.Repositories
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        // Method to check if the entity exists in the database
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id) != null;
         }
     }
 }
