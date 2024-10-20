@@ -2,7 +2,9 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443  # Expose HTTPS port (optional)
+
+# Expose HTTPS port (optional)
+EXPOSE 443
 
 # Use the .NET 8.0 SDK image for building the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -35,4 +37,5 @@ RUN mkdir -p /app/wwwroot/uploads
 
 # Start the application
 ENTRYPOINT ["dotnet", "API.dll"]
+
 
