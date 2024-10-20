@@ -2,6 +2,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
+EXPOSE 443  # Expose HTTPS port (optional)
 
 # Use the .NET 8.0 SDK image for building the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -25,7 +26,13 @@ RUN dotnet publish "API.csproj" -c Release -o /app/publish
 # Set up the runtime image
 FROM base AS final
 WORKDIR /app
+
+# Ensure the wwwroot folder is included in the final publish directory
 COPY --from=build /app/publish .
+
+# Manually create the uploads directory if it's empty
+RUN mkdir -p /app/wwwroot/uploads
 
 # Start the application
 ENTRYPOINT ["dotnet", "API.dll"]
+
