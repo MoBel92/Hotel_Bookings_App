@@ -42,19 +42,16 @@ public class HotelArticleController : ControllerBase
             hotelArticles = sortBy.ToLower() switch
             {
                 "city" => order.ToLower() == "desc"
-                    ? hotelArticles.OrderByDescending(h => h.City ?? string.Empty) // Use ?? to provide a default
+                    ? hotelArticles.OrderByDescending(h => h.City ?? string.Empty)
                     : hotelArticles.OrderBy(h => h.City ?? string.Empty),
                 "hotelstars" => order.ToLower() == "desc"
                     ? hotelArticles.OrderByDescending(h => h.HotelStars)
                     : hotelArticles.OrderBy(h => h.HotelStars),
-                _ => hotelArticles // Default if sortBy is not recognized
+                _ => hotelArticles
             };
         }
 
-        // Log the sorted result
-        Console.WriteLine($"Sorted hotel articles: {string.Join(", ", hotelArticles.Select(h => h.HotelName + " - " + (h.City ?? "Unknown City")))}");
-
-        return Ok(hotelArticles.ToList()); // Return 200 OK with the sorted list of hotel articles
+        return Ok(hotelArticles.ToList());
     }
 
     // GET: api/HotelArticle/{id}
@@ -64,9 +61,9 @@ public class HotelArticleController : ControllerBase
         var hotelArticle = await _getHandler.Handle(id);
         if (hotelArticle == null)
         {
-            return NotFound(); // Return 404 if not found
+            return NotFound();
         }
-        return Ok(hotelArticle); // Return 200 OK with the found hotel article
+        return Ok(hotelArticle);
     }
 
     // POST: api/HotelArticle
@@ -79,10 +76,10 @@ public class HotelArticleController : ControllerBase
         }
 
         // Ensure the "wwwroot/uploads" directory exists
-        var uploadPath = Path.Combine("wwwroot", "uploads");
+        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadPath))
         {
-            Directory.CreateDirectory(uploadPath); // Create the directory if it doesn't exist
+            Directory.CreateDirectory(uploadPath);
         }
 
         // Handle the uploaded images
@@ -93,8 +90,8 @@ public class HotelArticleController : ControllerBase
             {
                 if (formFile.Length > 0)
                 {
-                    // Define the path where the file will be stored
-                    var filePath = Path.Combine(uploadPath, formFile.FileName);
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
+                    var filePath = Path.Combine(uploadPath, uniqueFileName);
 
                     // Save the file to the server
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -102,8 +99,8 @@ public class HotelArticleController : ControllerBase
                         await formFile.CopyToAsync(stream);
                     }
 
-                    // Store the relative path to the uploaded file (to be saved in the database)
-                    imagePaths.Add("/uploads/" + formFile.FileName);
+                    // Store the relative path to the uploaded file
+                    imagePaths.Add("/uploads/" + uniqueFileName);
                 }
             }
         }
@@ -111,7 +108,7 @@ public class HotelArticleController : ControllerBase
         // Add the image paths to the DTO
         dto.ImagePaths = imagePaths;
 
-        // Call the handler to add the hotel article
+        // Call the handler to add the hotel article without assigning a return value
         await _addHandler.Handle(dto);
 
         // Return a success response
@@ -120,14 +117,50 @@ public class HotelArticleController : ControllerBase
 
     // PUT: api/HotelArticle/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateHotelArticle(int id, [FromBody] HotelArticleUpdateDto dto)
+    public async Task<IActionResult> UpdateHotelArticle(int id, [FromForm] HotelArticleUpdateDto dto)
     {
         if (dto == null || id != dto.HotelID)
         {
-            return BadRequest("Hotel Article ID mismatch or the article is null"); // Return 400 Bad Request if IDs do not match
+            return BadRequest("Hotel Article ID mismatch or the article is null.");
         }
+
+        // Ensure the "wwwroot/uploads" directory exists
+        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+
+        // Handle the new images being uploaded
+        List<string> newImagePaths = new List<string>();
+        if (dto.NewImages != null && dto.NewImages.Count > 0)
+        {
+            foreach (var formFile in dto.NewImages)
+            {
+                if (formFile.Length > 0)
+                {
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
+                    var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+                    // Save the file to the server
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+
+                    // Store the relative path to the uploaded file
+                    newImagePaths.Add("/uploads/" + uniqueFileName);
+                }
+            }
+        }
+
+        // Merge existing image paths with new ones
+        dto.ImagePaths.AddRange(newImagePaths);
+
+        // Call the handler to update the hotel article
         await _updateHandler.Handle(dto);
-        return NoContent(); // Return 204 No Content
+
+        return NoContent();
     }
 
     // DELETE: api/HotelArticle/{id}
@@ -135,6 +168,6 @@ public class HotelArticleController : ControllerBase
     public async Task<IActionResult> DeleteHotelArticle(int id)
     {
         await _deleteHandler.Handle(id);
-        return NoContent(); // Return 204 No Content
+        return NoContent();
     }
 }

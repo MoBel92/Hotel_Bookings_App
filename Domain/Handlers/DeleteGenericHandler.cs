@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using StartMyNewApp.Domain.Interface;
 
 namespace StartMyNewApp.Domain.Handlers
@@ -14,26 +15,22 @@ namespace StartMyNewApp.Domain.Handlers
 
         public async Task Handle(int id)
         {
+            var entity = await _repository.GetAsync(id);
+
+            if (entity == null)
+            {
+                throw new Exception($"Entity with ID {id} not found.");
+            }
+
             try
             {
-                var entity = await _repository.GetAsync(id);
-                if (entity != null)
-                {
-                    await _repository.DeleteAsync(entity);
-                }
-                else
-                {
-                    // Log or handle the case where the entity was not found
-                    Console.WriteLine($"Entity with ID {id} not found.");
-                }
+                await _repository.DeleteAsync(entity);
             }
             catch (Exception ex)
             {
-                // Log the exception or rethrow it as needed
                 Console.WriteLine($"Error deleting entity: {ex.Message}");
-                throw; 
+                throw;  // Rethrow the exception after logging
             }
         }
-
     }
 }

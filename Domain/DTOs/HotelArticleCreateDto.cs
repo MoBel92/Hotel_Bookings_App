@@ -1,5 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace StartMyNewApp.Domain.DTOs
 {
@@ -15,12 +14,12 @@ namespace StartMyNewApp.Domain.DTOs
         public string Country { get; set; } = string.Empty;
 
         // Property to hold uploaded images
-        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
+        public List<IFormFile> Images { get; set; } = new List<IFormFile>(); // Can accept multiple files
 
-        // Property to hold saved image paths
+        // Property to hold saved image paths after processing
         public List<string> ImagePaths { get; set; } = new List<string>();
 
-        // Owner/Admin properties - optional now
+        // Nullable property for the Owner/Admin creating the article
         public int? OwnerId { get; set; } // Nullable OwnerId
     }
 }

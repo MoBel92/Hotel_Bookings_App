@@ -1,9 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StartMyNewApp.Domain.Interface;  
-using DATA.Context;  
+using StartMyNewApp.Domain.Interface;
+using DATA.Context;
+using System.Threading.Tasks;
 
 namespace StartMyNewApp.Infra.Repositories
 {
+    // Custom exception for entity not found scenarios
+    public class EntityNotFoundException : Exception
+    {
+        public EntityNotFoundException(string message) : base(message)
+        {
+        }
+    }
+
+    // Interface for soft deletable entities
+    public interface ISoftDeletable
+    {
+        bool IsDeleted { get; set; }
+    }
+
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly AppDbContext _context;
@@ -14,10 +29,18 @@ namespace StartMyNewApp.Infra.Repositories
             _context = context;
         }
 
-        // Fetches a list of all entities of type T
+        // Fetches a list of all entities of type T, excluding soft-deleted ones if applicable
         public async Task<IEnumerable<T>> GetListAsync()
         {
-            return await _context.Set<T>().ToListAsync();
+            IQueryable<T> query = _context.Set<T>();
+
+            // If the entity supports soft deletion, filter out deleted entities
+            if (typeof(ISoftDeletable).IsAssignableFrom(typeof(T)))
+            {
+                query = query.Where(e => (e as ISoftDeletable).IsDeleted == false);
+            }
+
+            return await query.ToListAsync();
         }
 
         // Fetch a single entity of type T by its ID, throws an exception if not found
@@ -26,8 +49,15 @@ namespace StartMyNewApp.Infra.Repositories
             var entity = await _context.Set<T>().FindAsync(id);
             if (entity == null)
             {
-                throw new Exception($"{typeof(T).Name} with Id {id} not found.");
+                throw new EntityNotFoundException($"{typeof(T).Name} with Id {id} not found.");
             }
+
+            // Check if the entity is soft deleted and throw an exception if necessary
+            if (entity is ISoftDeletable deletableEntity && deletableEntity.IsDeleted)
+            {
+                throw new EntityNotFoundException($"{typeof(T).Name} with Id {id} is deleted.");
+            }
+
             return entity;
         }
 
@@ -45,10 +75,21 @@ namespace StartMyNewApp.Infra.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Deletes an entity of type T from the database
+        // Soft delete or remove an entity of type T from the database
         public async Task DeleteAsync(T entity)
         {
-            _context.Set<T>().Remove(entity);
+            if (entity is ISoftDeletable deletableEntity)
+            {
+                // Perform a soft delete
+                deletableEntity.IsDeleted = true;
+                _context.Set<T>().Update(entity);
+            }
+            else
+            {
+                // Hard delete
+                _context.Set<T>().Remove(entity);
+            }
+
             await _context.SaveChangesAsync();
         }
     }

@@ -4,7 +4,7 @@ using StartMyNewApp.Infra.Repositories;
 using DATA.Context;
 using Microsoft.OpenApi.Models;
 using StartMyNewApp.Domain.Handlers;
-using AutoMapper; // AutoMapper for DTO to model mapping
+
 using StartMyNewApp.Domain.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllers();
 
-// Register DbContext
+// Register DbContext with connection string from configuration
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -23,9 +23,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 // Configure AutoMapper and register mapping profiles
-builder.Services.AddAutoMapper(typeof(MappingProfile)); // Replace with the correct profile class
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Register updated handlers with DTO support
+// Register handlers with DTO support
 builder.Services.AddScoped(typeof(AddGenericHandler<,>));
 builder.Services.AddScoped(typeof(UpdateGenericHandler<,>));
 builder.Services.AddScoped(typeof(DeleteGenericHandler<>));
@@ -38,33 +38,46 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotel_Bookings_App", Version = "v1" });
 });
 
-// Add CORS
+// Add CORS with environment-based configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigins",
-        policy => policy.AllowAnyOrigin() // Consider allowing any origin for development (temporarily)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            // Allow any origin for development
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        }
+        else
+        {
+            // Restrict CORS in production (example: allow specific origins)
+            policy.WithOrigins("https://your-production-domain.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+    });
 });
 
 var app = builder.Build();
 
 // Enable static file serving (for wwwroot)
-app.UseStaticFiles(); // This is required to serve images and other static files from the wwwroot folder
+app.UseStaticFiles(); // To serve images and other static files from wwwroot
 
 // Configure the HTTP request pipeline
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
-    c.RoutePrefix = string.Empty;
-});
 
-// Optional: Use HTTPS redirection in development
-if (!app.Environment.IsProduction())
+// Enable Swagger only in non-production environments
+if (app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
+        c.RoutePrefix = string.Empty; // Swagger is available at the root URL
+    });
 }
+
+// Use HTTPS redirection for all environments
+app.UseHttpsRedirection();
 
 // Use CORS
 app.UseCors("AllowSpecificOrigins");

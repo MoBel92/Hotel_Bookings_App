@@ -34,9 +34,9 @@ namespace DATA.Context
             modelBuilder.Entity<Wishlist>().HasKey(w => w.WishlistId);
             modelBuilder.Entity<Amenity>().HasKey(a => a.AmenityId);
             modelBuilder.Entity<Message>().HasKey(m => m.MessageId);
-            modelBuilder.Entity<Notification>().HasKey(n => n.NotificationId); // Configure primary key for Notification
+            modelBuilder.Entity<Notification>().HasKey(n => n.NotificationId);
 
-            // Define relationships
+            // Define relationships with cascade or restrict deletion as needed
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.HotelArticle)
                 .WithMany(h => h.Comments)
@@ -44,17 +44,16 @@ namespace DATA.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comment>()
-    .HasOne(c => c.User)
-    .WithMany(u => u.Comments)
-    .HasForeignKey(c => c.UserId)
-    .OnDelete(DeleteBehavior.NoAction); // Change this to NoAction
-
+                .HasOne(c => c.User)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Adjusted to NoAction
 
             modelBuilder.Entity<Booking>()
-     .HasOne(b => b.User)
-     .WithMany(u => u.Bookings)
-     .HasForeignKey(b => b.UserId)
-     .OnDelete(DeleteBehavior.Restrict); // Modify this to suit your relationship needs
+                .HasOne(b => b.User)
+                .WithMany(u => u.Bookings)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.HotelArticle)
@@ -67,7 +66,6 @@ namespace DATA.Context
                 .WithMany(r => r.Bookings)
                 .HasForeignKey(b => b.RoomId)
                 .OnDelete(DeleteBehavior.Cascade);
-
 
             modelBuilder.Entity<Room>()
                 .HasOne(r => r.HotelArticle)
@@ -88,17 +86,16 @@ namespace DATA.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Wishlist>()
-    .HasOne(w => w.User)
-    .WithMany(u => u.Wishlists)
-    .HasForeignKey(w => w.UserId)
-    .OnDelete(DeleteBehavior.NoAction); // Change from Cascade to NoAction
+                .HasOne(w => w.User)
+                .WithMany(u => u.Wishlists)
+                .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // NoAction for User
 
             modelBuilder.Entity<Wishlist>()
                 .HasOne(w => w.HotelArticle)
                 .WithMany(h => h.Wishlists)
                 .HasForeignKey(w => w.HotelId)
-                .OnDelete(DeleteBehavior.Cascade); // Keep this as Cascade if desired
-
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Amenity>()
                 .HasOne(a => a.HotelArticle)
@@ -122,9 +119,9 @@ namespace DATA.Context
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Relationship with User for notifications
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Specify precision and scale for decimal properties
+            // Configure decimal precision for specific properties
             modelBuilder.Entity<Payment>()
                 .Property(p => p.TotalAmount)
                 .HasColumnType("decimal(18, 2)");
@@ -132,8 +129,8 @@ namespace DATA.Context
             modelBuilder.Entity<Room>()
                 .Property(r => r.Price)
                 .HasColumnType("decimal(18, 2)");
+
+            // Add indexes if necessary (e.g., UserId for frequently queried columns)
         }
     }
 }
-
-

@@ -16,11 +16,10 @@ namespace StartMyNewApp.Domain.MappingProfiles
             // HotelArticle mappings
             CreateMap<HotelArticleCreateDto, HotelArticle>()
                 .ForMember(dest => dest.ImagePaths, opt => opt.MapFrom(src => src.ImagePaths)); // Map ImagePaths
-
             CreateMap<HotelArticleUpdateDto, HotelArticle>()
-                .ForMember(dest => dest.ImagePaths, opt => opt.MapFrom(src => src.ImagePaths)); // Map ImagePaths
-
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Conditional update mapping
             CreateMap<HotelArticle, HotelArticleReadDto>();
+
             // Room mappings
             CreateMap<RoomCreateDto, Room>();
             CreateMap<RoomUpdateDto, Room>();

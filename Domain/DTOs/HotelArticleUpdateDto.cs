@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
+
 namespace StartMyNewApp.Domain.DTOs
 {
     public class HotelArticleUpdateDto
@@ -15,10 +17,9 @@ namespace StartMyNewApp.Domain.DTOs
         public string Country { get; set; } = string.Empty;
 
         // Property to handle new uploaded images
-        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
+        public List<IFormFile> NewImages { get; set; } = new List<IFormFile>();
 
-        // Property to hold existing image paths
-        public List<string> ImagePaths { get; set; } = new List<string>();
+        // Property to hold existing image paths (should be populated from the current article data)
+        public List<string> ImagePaths { get; set; } = new List<string>(); // Add this property to hold the existing image paths
     }
-
 }

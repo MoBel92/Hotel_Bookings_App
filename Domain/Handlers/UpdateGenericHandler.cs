@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
 using StartMyNewApp.Domain.Interface;
-using AutoMapper; 
+using AutoMapper;
 
 namespace StartMyNewApp.Domain.Handlers
 {
     public class UpdateGenericHandler<T, TUpdateDto> where T : class where TUpdateDto : class
     {
         private readonly IGenericRepository<T> _repository;
-        private readonly IMapper _mapper; // Inject AutoMapper for mapping DTO to model.
+        private readonly IMapper _mapper;
 
         public UpdateGenericHandler(IGenericRepository<T> repository, IMapper mapper)
         {
@@ -20,8 +20,14 @@ namespace StartMyNewApp.Domain.Handlers
             // Map the DTO to the domain model
             var entity = _mapper.Map<T>(dto);
 
-            // Update the mapped entity in the repository
+            if (entity == null)
+            {
+                throw new Exception("Entity cannot be null for update.");
+            }
+
+            // Update the entity in the repository
             await _repository.UpdateAsync(entity);
         }
     }
 }
+
