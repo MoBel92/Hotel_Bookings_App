@@ -34,7 +34,7 @@ namespace StartMyNewApp.API.Controllers
         public async Task<IActionResult> GetNotifications()
         {
             var notifications = await _getListHandler.Handle();
-            return Ok(notifications); // Return 200 OK with the list of notifications
+            return Ok(notifications); // Return 200 OK with the list of notifications !
         }
 
         // GET: api/Notification/{id}
