@@ -3,7 +3,7 @@ using StartMyNewApp.Domain.Handlers;
 using StartMyNewApp.Domain.DTOs;
 using System.Linq;
 using StartMyNewApp.Domain.Models;
-
+using System.IO;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -32,7 +32,7 @@ public class HotelArticleController : ControllerBase
     // Helper to construct full image URLs
     private string GetFullImageUrl(string imagePath)
     {
-        return $"{Request.Scheme}://{Request.Host}{imagePath}";
+        return $"{Request.Scheme}://{Request.Host}/uploads/{imagePath}";
     }
 
     // GET: api/HotelArticle?sortBy=city&order=asc
@@ -56,7 +56,7 @@ public class HotelArticleController : ControllerBase
             };
         }
 
-        // Ensure full image URLs are returned
+        // Convert stored image filenames to full URLs
         foreach (var article in hotelArticles)
         {
             article.ImagePaths = article.ImagePaths.Select(GetFullImageUrl).ToList();
@@ -75,7 +75,7 @@ public class HotelArticleController : ControllerBase
             return NotFound();
         }
 
-        // Add base URL to the image paths
+        // Convert stored image filenames to full URLs
         hotelArticle.ImagePaths = hotelArticle.ImagePaths.Select(GetFullImageUrl).ToList();
 
         return Ok(hotelArticle);
@@ -114,13 +114,13 @@ public class HotelArticleController : ControllerBase
                         await formFile.CopyToAsync(stream);
                     }
 
-                    // Store the relative path to the uploaded file
-                    imagePaths.Add("/uploads/" + uniqueFileName);
+                    // Store only the filename
+                    imagePaths.Add(uniqueFileName);
                 }
             }
         }
 
-        // Add the image paths to the DTO
+        // Add the image paths (filenames) to the DTO
         dto.ImagePaths = imagePaths;
 
         // Call the handler to add the hotel article
@@ -163,8 +163,8 @@ public class HotelArticleController : ControllerBase
                         await formFile.CopyToAsync(stream);
                     }
 
-                    // Store the relative path to the uploaded file
-                    newImagePaths.Add("/uploads/" + uniqueFileName);
+                    // Store only the filename
+                    newImagePaths.Add(uniqueFileName);
                 }
             }
         }
