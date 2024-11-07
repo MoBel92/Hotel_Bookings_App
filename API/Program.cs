@@ -40,7 +40,7 @@ builder.Services.AddSwaggerGen(c =>
 // Add CORS policy for development access from localhost
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("AllowLocalhostAndProduction", policy =>
     {
         policy.WithOrigins("http://localhost:3000") // Allow only local frontend during development
               .AllowAnyHeader()
@@ -65,7 +65,8 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 
 // Apply the CORS policy before any other middleware
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowLocalhostAndProduction");
+
 
 app.UseAuthorization();
 

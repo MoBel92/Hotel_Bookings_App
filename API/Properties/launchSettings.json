@@ -13,8 +13,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "", // Directly to root URL, where Swagger UI is available
-      "applicationUrl": "http://localhost:8080",
+      "applicationUrl": "http://localhost:8080", // Port 8080 for http
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -23,8 +22,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "/", // Set this to root URL
-      "applicationUrl": "https://localhost:7250;http://localhost:8080",
+      "applicationUrl": "https://localhost:7250;http://localhost:8080", // Ports for https and http
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -32,7 +30,6 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "/", // Set this to root URL
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
