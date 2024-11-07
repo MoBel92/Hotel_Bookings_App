@@ -21,12 +21,22 @@ namespace StartMyNewApp.Domain.Handlers
             var entity = _mapper.Map<T>(dto);
             await _repository.AddAsync(entity);
 
-            // Assuming the entity has a property named "Id" that represents the primary key.
-            // You may need to modify this to match your actual ID property (e.g., "IdUser").
+            // Assuming the entity has a property named "IdUser" that represents the primary key.
+            // Modify this to match your actual ID property if needed.
             var idProperty = typeof(T).GetProperty("IdUser");
-            if (idProperty == null) throw new Exception("Id property not found on entity.");
+            if (idProperty == null)
+            {
+                throw new Exception("Id property not found on entity.");
+            }
 
-            return (int)idProperty.GetValue(entity);
+            // Safely get the value and check if it's null before casting
+            var idValue = idProperty.GetValue(entity);
+            if (idValue == null)
+            {
+                throw new Exception("The Id value is null after adding the entity.");
+            }
+
+            return (int)idValue;
         }
     }
 }

@@ -3,6 +3,7 @@ using StartMyNewApp.Domain.Handlers;
 using StartMyNewApp.Domain.DTOs;
 using StartMyNewApp.Domain.Models;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -13,19 +14,22 @@ public class UserController : ControllerBase
     private readonly DeleteGenericHandler<User> _deleteHandler;
     private readonly GetGenericHandler<User, UserReadDto> _getHandler;
     private readonly GetListGenericHandler<User, UserReadDto> _getListHandler;
+    private readonly ILogger<UserController> _logger; // Add logger
 
     public UserController(
         AddGenericHandler<User, UserCreateDto> addHandler,
         UpdateGenericHandler<User, UserUpdateDto> updateHandler,
         DeleteGenericHandler<User> deleteHandler,
         GetGenericHandler<User, UserReadDto> getHandler,
-        GetListGenericHandler<User, UserReadDto> getListHandler)
+        GetListGenericHandler<User, UserReadDto> getListHandler,
+        ILogger<UserController> logger) // Inject logger
     {
         _addHandler = addHandler;
         _updateHandler = updateHandler;
         _deleteHandler = deleteHandler;
         _getHandler = getHandler;
         _getListHandler = getListHandler;
+        _logger = logger; // Initialize logger
     }
 
     // GET: api/User
@@ -39,7 +43,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Log the exception here if needed
+            _logger.LogError(ex, "An error occurred while fetching users.");
             return StatusCode(500, "An error occurred while fetching users.");
         }
     }
@@ -55,6 +59,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, $"An error occurred while fetching the user with ID {id}.");
             return StatusCode(500, "An error occurred while fetching the user.");
         }
     }
@@ -66,16 +71,15 @@ public class UserController : ControllerBase
 
         try
         {
-            // Get the created user's ID from the handler
             var createdUserId = await _addHandler.Handle(dto);
             return CreatedAtAction(nameof(GetUser), new { id = createdUserId }, dto);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while adding the user.");
             return StatusCode(500, "An error occurred while adding the user.");
         }
     }
-
 
     // PUT: api/User/{id}
     [HttpPut("{id}")]
@@ -90,6 +94,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, $"An error occurred while updating the user with ID {id}.");
             return StatusCode(500, "An error occurred while updating the user.");
         }
     }
@@ -105,8 +110,10 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, $"An error occurred while deleting the user with ID {id}.");
             return StatusCode(500, "An error occurred while deleting the user.");
         }
     }
 }
+
 
