@@ -37,15 +37,14 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotel_Bookings_App", Version = "v1" });
 });
 
-// Add open CORS policy for public access (allow all origins, headers, and methods)
+// Add CORS policy for development access from localhost
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalFrontend", policy =>
+    options.AddPolicy("AllowLocalhost", policy =>
     {
         policy.WithOrigins("http://localhost:3000") // Allow only local frontend during development
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
 
@@ -65,8 +64,8 @@ app.UseSwaggerUI(c =>
 // Use HTTPS redirection
 app.UseHttpsRedirection();
 
-// Use open CORS policy for all origins
-app.UseCors("AllowLocalFrontend");
+// Apply the CORS policy before any other middleware
+app.UseCors("AllowLocalhost");
 
 app.UseAuthorization();
 
