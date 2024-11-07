@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StartMyNewApp.Domain.Handlers;
-using StartMyNewApp.Domain.DTOs; 
+using StartMyNewApp.Domain.DTOs;
 using StartMyNewApp.Domain.Models;
+using System.Threading.Tasks;
+
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
@@ -30,41 +32,81 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _getListHandler.Handle();
-        return Ok(users); // Return 200 OK with the list of users
+        try
+        {
+            var users = await _getListHandler.Handle();
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception here if needed
+            return StatusCode(500, "An error occurred while fetching users.");
+        }
     }
 
     // GET: api/User/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(int id)
     {
-        var user = await _getHandler.Handle(id);
-        return user != null ? Ok(user) : NotFound(); // Return 200 OK or 404 Not Found
+        try
+        {
+            var user = await _getHandler.Handle(id);
+            return user != null ? Ok(user) : NotFound();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while fetching the user.");
+        }
     }
 
-    // POST: api/User
     [HttpPost]
     public async Task<IActionResult> AddUser([FromBody] UserCreateDto dto)
     {
         if (dto == null) return BadRequest("User cannot be null");
-        await _addHandler.Handle(dto);
-        return CreatedAtAction(nameof(GetUser), new { id = dto.Username }, dto); 
+
+        try
+        {
+            // Get the created user's ID from the handler
+            var createdUserId = await _addHandler.Handle(dto);
+            return CreatedAtAction(nameof(GetUser), new { id = createdUserId }, dto);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while adding the user.");
+        }
     }
+
 
     // PUT: api/User/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto dto)
     {
-        if (id != dto.IdUser) return BadRequest("User ID mismatch"); // Return 400 Bad Request
-        await _updateHandler.Handle(dto);
-        return NoContent(); // Return 204 No Content
+        if (id != dto.IdUser) return BadRequest("User ID mismatch");
+
+        try
+        {
+            await _updateHandler.Handle(dto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while updating the user.");
+        }
     }
 
     // DELETE: api/User/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        await _deleteHandler.Handle(id);
-        return NoContent(); // Return 204 No Content
+        try
+        {
+            await _deleteHandler.Handle(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while deleting the user.");
+        }
     }
 }
+
