@@ -3,8 +3,7 @@ using StartMyNewApp.Domain.Handlers;
 using StartMyNewApp.Domain.DTOs;
 using System.Linq;
 using StartMyNewApp.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using System.IO;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -91,7 +90,7 @@ public class HotelArticleController : ControllerBase
             return BadRequest("HotelArticle cannot be null");
         }
 
-        // Ensure the "wwwroot/uploads" directory exists
+        // Directory for uploaded images
         var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadPath))
         {
@@ -140,7 +139,7 @@ public class HotelArticleController : ControllerBase
             return BadRequest("Hotel Article ID mismatch or the article is null.");
         }
 
-        // Ensure the "wwwroot/uploads" directory exists
+        // Directory for uploaded images
         var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadPath))
         {
@@ -187,5 +186,6 @@ public class HotelArticleController : ControllerBase
         return NoContent();
     }
 }
+
 
 

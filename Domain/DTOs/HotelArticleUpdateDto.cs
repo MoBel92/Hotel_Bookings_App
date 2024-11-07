@@ -19,7 +19,7 @@ namespace StartMyNewApp.Domain.DTOs
         // Property to handle new uploaded images
         public List<IFormFile> NewImages { get; set; } = new List<IFormFile>();
 
-        // Property to hold existing image paths (should be populated from the current article data)
-        public List<string> ImagePaths { get; set; } = new List<string>(); // Add this property to hold the existing image paths
+        // Property to hold existing image paths
+        public List<string> ImagePaths { get; set; } = new List<string>();
     }
 }

@@ -13,13 +13,13 @@ namespace StartMyNewApp.Domain.DTOs
         public string ZipCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
 
-        // Property to hold uploaded images
-        public List<IFormFile> Images { get; set; } = new List<IFormFile>(); // Can accept multiple files
+        // Property to hold uploaded images as IFormFile for file uploads
+        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
 
-        // Property to hold saved image paths after processing
+        // Optional property to store image paths after processing
         public List<string> ImagePaths { get; set; } = new List<string>();
 
         // Nullable property for the Owner/Admin creating the article
-        public int? OwnerId { get; set; } // Nullable OwnerId
+        public int? OwnerId { get; set; }
     }
 }
