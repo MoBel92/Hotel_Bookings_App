@@ -40,11 +40,12 @@ builder.Services.AddSwaggerGen(c =>
 // Add open CORS policy for public access (allow all origins, headers, and methods)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", policy =>
+    options.AddPolicy("AllowLocalFrontend", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:3000") // Allow only local frontend during development
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -65,7 +66,7 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 
 // Use open CORS policy for all origins
-app.UseCors("AllowAllOrigins");
+app.UseCors("AllowLocalFrontend");
 
 app.UseAuthorization();
 
