@@ -11,67 +11,78 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllers();
 
-// Register DbContext with connection string from configuration
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("DATA")
     ));
 
-// Register the generic repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-// Configure AutoMapper and register mapping profiles
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-// Register handlers with DTO support
 builder.Services.AddScoped(typeof(AddGenericHandler<,>));
 builder.Services.AddScoped(typeof(UpdateGenericHandler<,>));
 builder.Services.AddScoped(typeof(DeleteGenericHandler<>));
 builder.Services.AddScoped(typeof(GetGenericHandler<,>));
 builder.Services.AddScoped(typeof(GetListGenericHandler<,>));
 
-// Add Swagger services
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotel_Bookings_App", Version = "v1" });
 });
 
-// Add CORS policy for development access from localhost
+// Add CORS policy for debugging
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhostAndProduction", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000") // Allow both HTTP and HTTPS
+        Console.WriteLine("CORS policy applied with allowed origins:");
+        Console.WriteLine("http://localhost:3000, https://localhost:3000");
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 
+    options.AddPolicy("AllowAll", policy =>
+    {
+        Console.WriteLine("CORS policy applied for all origins (debugging)");
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
 
-// Enable static file serving (for wwwroot)
-app.UseStaticFiles(); // To serve images and other static files from wwwroot
+// Debugging: Log incoming requests and responses
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    Console.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}: {h.Value}"))}");
+    await next();
+    Console.WriteLine($"Response: {context.Response.StatusCode}");
+});
 
-// Enable Swagger for API documentation
+// Enable Developer Exception Page for debugging
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+// Enable static file serving
+app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel_Bookings_App API V1");
-    c.RoutePrefix = string.Empty; // Swagger is available at the root URL
+    c.RoutePrefix = string.Empty;
 });
 
-// Use HTTPS redirection
+// Apply permissive CORS policy for debugging
+app.UseCors("AllowAll");
+
+// Apply middleware
 app.UseHttpsRedirection();
-
-// Apply the CORS policy before any other middleware
-app.UseCors("AllowLocalhostAndProduction");
-
-
 app.UseAuthorization();
-
-// Map controllers
 app.MapControllers();
 
 app.Run();
