@@ -42,10 +42,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhostAndProduction", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Allow only local frontend during development
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000") // Allow both HTTP and HTTPS
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+
 });
 
 var app = builder.Build();
