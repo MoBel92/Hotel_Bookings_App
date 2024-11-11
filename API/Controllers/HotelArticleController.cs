@@ -128,12 +128,14 @@ public class HotelArticleController : ControllerBase
             return new List<string>(); // Return an empty list if the folder does not exist
         }
 
-        // Get all image files in the folder and return their filenames
+        // Generate full URLs for the images
+        var baseUrl = $"{Request.Scheme}://{Request.Host}/images/{hotelName}/";
         return Directory.GetFiles(hotelImagesFolder)
-            .Select(filePath => Path.GetFileName(filePath)) // Extract filenames only
+            .Select(filePath => baseUrl + Path.GetFileName(filePath)) // Generate full URLs
             .ToList();
     }
 }
+
 
 
 
