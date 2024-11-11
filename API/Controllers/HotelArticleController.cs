@@ -3,6 +3,7 @@ using StartMyNewApp.Domain.Handlers;
 using StartMyNewApp.Domain.DTOs;
 using System.Linq;
 using StartMyNewApp.Domain.Models;
+using System.IO;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -13,19 +14,22 @@ public class HotelArticleController : ControllerBase
     private readonly DeleteGenericHandler<HotelArticle> _deleteHandler;
     private readonly GetGenericHandler<HotelArticle, HotelArticleReadDto> _getHandler;
     private readonly GetListGenericHandler<HotelArticle, HotelArticleReadDto> _getListHandler;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public HotelArticleController(
         AddGenericHandler<HotelArticle, HotelArticleCreateDto> addHandler,
         UpdateGenericHandler<HotelArticle, HotelArticleUpdateDto> updateHandler,
         DeleteGenericHandler<HotelArticle> deleteHandler,
         GetGenericHandler<HotelArticle, HotelArticleReadDto> getHandler,
-        GetListGenericHandler<HotelArticle, HotelArticleReadDto> getListHandler)
+        GetListGenericHandler<HotelArticle, HotelArticleReadDto> getListHandler,
+        IWebHostEnvironment webHostEnvironment)
     {
         _addHandler = addHandler;
         _updateHandler = updateHandler;
         _deleteHandler = deleteHandler;
         _getHandler = getHandler;
         _getListHandler = getListHandler;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: api/HotelArticle
@@ -33,6 +37,12 @@ public class HotelArticleController : ControllerBase
     public async Task<IActionResult> GetHotelArticles(string? sortBy = null, string? order = "asc")
     {
         var hotelArticles = await _getListHandler.Handle() ?? Enumerable.Empty<HotelArticleReadDto>();
+
+        // Add image paths for each hotel
+        foreach (var hotel in hotelArticles)
+        {
+            hotel.ImagePaths = GetHotelImagePaths(hotel.HotelName);
+        }
 
         // Sorting logic
         if (!string.IsNullOrEmpty(sortBy))
@@ -61,6 +71,9 @@ public class HotelArticleController : ControllerBase
         {
             return NotFound();
         }
+
+        // Add image paths for the specific hotel
+        hotelArticle.ImagePaths = GetHotelImagePaths(hotelArticle.HotelName);
 
         return Ok(hotelArticle);
     }
@@ -100,7 +113,28 @@ public class HotelArticleController : ControllerBase
         await _deleteHandler.Handle(id);
         return NoContent();
     }
+
+    // Helper method to get image paths for a hotel
+    private List<string> GetHotelImagePaths(string hotelName)
+    {
+        if (string.IsNullOrWhiteSpace(hotelName))
+        {
+            return new List<string>(); // Return an empty list if the hotel name is invalid
+        }
+
+        var hotelImagesFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", hotelName);
+        if (!Directory.Exists(hotelImagesFolder))
+        {
+            return new List<string>(); // Return an empty list if the folder does not exist
+        }
+
+        // Get all image files in the folder and return their filenames
+        return Directory.GetFiles(hotelImagesFolder)
+            .Select(filePath => Path.GetFileName(filePath)) // Extract filenames only
+            .ToList();
+    }
 }
+
 
 
 
