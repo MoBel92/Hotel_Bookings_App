@@ -32,6 +32,87 @@ public class HotelArticleController : ControllerBase
         _webHostEnvironment = webHostEnvironment;
     }
 
+    // GET: api/HotelArticle
+    [HttpGet]
+    public async Task<IActionResult> GetHotelArticles(string? sortBy = null, string? order = "asc")
+    {
+        var hotelArticles = await _getListHandler.Handle() ?? Enumerable.Empty<HotelArticleReadDto>();
+
+        // Add image paths for each hotel
+        foreach (var hotel in hotelArticles)
+        {
+            hotel.ImagePaths = GetHotelImagePaths(hotel.HotelName);
+        }
+
+        // Sorting logic
+        if (!string.IsNullOrEmpty(sortBy))
+        {
+            hotelArticles = sortBy.ToLower() switch
+            {
+                "city" => order.ToLower() == "desc"
+                    ? hotelArticles.OrderByDescending(h => h.City ?? string.Empty)
+                    : hotelArticles.OrderBy(h => h.City ?? string.Empty),
+                "hotelstars" => order.ToLower() == "desc"
+                    ? hotelArticles.OrderByDescending(h => h.HotelStars)
+                    : hotelArticles.OrderBy(h => h.HotelStars),
+                _ => hotelArticles
+            };
+        }
+
+        return Ok(hotelArticles.ToList());
+    }
+
+    // GET: api/HotelArticle/{id}
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetHotelArticle(int id)
+    {
+        var hotelArticle = await _getHandler.Handle(id);
+        if (hotelArticle == null)
+        {
+            return NotFound();
+        }
+
+        // Add image paths for the specific hotel
+        hotelArticle.ImagePaths = GetHotelImagePaths(hotelArticle.HotelName);
+
+        return Ok(hotelArticle);
+    }
+
+    // POST: api/HotelArticle
+    [HttpPost]
+    public async Task<IActionResult> AddHotelArticle([FromForm] HotelArticleCreateDto dto)
+    {
+        if (dto == null)
+        {
+            return BadRequest("HotelArticle cannot be null");
+        }
+
+        // Process and save new images if provided
+        if (dto.NewImages != null && dto.NewImages.Count > 0)
+        {
+            var imagesFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "images", dto.HotelName);
+            if (!Directory.Exists(imagesFolderPath))
+            {
+                Directory.CreateDirectory(imagesFolderPath);
+            }
+
+            foreach (var image in dto.NewImages)
+            {
+                var filePath = Path.Combine(imagesFolderPath, image.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                // Add the new image path to ImagePaths
+                dto.ImagePaths.Add(image.FileName);
+            }
+        }
+
+        await _addHandler.Handle(dto);
+        return CreatedAtAction(nameof(GetHotelArticle), new { id = dto.HotelID }, dto);
+    }
+
     // PUT: api/HotelArticle/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateHotelArticle(int id, [FromForm] HotelArticleUpdateDto dto)
@@ -74,6 +155,14 @@ public class HotelArticleController : ControllerBase
         return NoContent();
     }
 
+    // DELETE: api/HotelArticle/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteHotelArticle(int id)
+    {
+        await _deleteHandler.Handle(id);
+        return NoContent();
+    }
+
     // Helper method to get image paths for a hotel
     private List<string> GetHotelImagePaths(string hotelName)
     {
@@ -94,9 +183,8 @@ public class HotelArticleController : ControllerBase
             .Select(filePath => baseUrl + Path.GetFileName(filePath)) // Generate full URLs
             .ToList();
     }
-
-    // Other existing methods (Get, Post, Delete, etc.) remain unchanged
 }
+
 
 
 
